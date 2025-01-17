@@ -1,0 +1,181 @@
+@theme "~/.cache/wal/colors-rofi-dark.rasi"
+
+configuration {
+    modi:                        "drun";
+    show-icons:                  false;
+  	drun-display-format:         "{name}";
+}
+
+* {
+    font:                        "JetBrains Mono Nerd Font Bold 10";
+    background:                  transparent;
+    background-alt:              rgba(0,0,0,0.3);
+    foreground:                  @selected-urgent-background;
+    selected:                    rgba(0,0,0,0.5);
+    active:                      #909090;
+    urgent:                      @selected-normal-background;
+}
+
+window {
+    width:                       100%;
+    height:                      100%;
+    margin:                      0px;
+    padding:                     0px;
+}
+
+mainbox {
+    orientation:                 vertical;
+    children:                    [ "inputbar", "textbox-help", "message", "listview" ];
+    background-color:            transparent;
+
+    spacing:                     16px;
+    margin:                      0px;
+    padding:                     64px;
+}
+
+inputbar {
+    children:                    [ "dummy", "entry", "dummy" ];
+    border-radius:               10px;
+
+    spacing:                     0px;
+    padding:                     128px 64px;
+    orientation:                 horizontal;
+    background-image:            url("~/wallpaper/wallpaper.png", width);
+}
+
+dummy {
+  background-color: transparent;
+}
+
+textbox-help {
+    expand: false;
+    content: " [CTRL DEL]  Delete \n [ALT DEL]   Wipe";
+
+    border-radius:                 10px;
+    background-color:              @background-alt;
+    text-color:                    @foreground;
+
+    margin:                        0px;
+    padding:                       6px;
+}
+
+textbox-icon {
+    expand:                        true;
+    background-color:              @background-alt;
+    text-color:                    inherit;
+    margin: 0px 0px 0px 25px;
+    content: "  ";
+}
+
+entry {
+    cursor:                      inherit;
+    placeholder:                 "Search";
+    placeholder-color:           inherit;
+
+    border-radius:               10px;
+    background-color:            @selected;
+    text-color:                  inherit;
+
+    padding:                     16px;
+    margin:                      0px;
+}
+
+listview {
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "message", "listview" ];
+}
+
+listview {
+    cursor:                      "default";
+    columns:                     2;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   true;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    
+    background-color:            transparent;
+    text-color:                  @foreground;
+
+    spacing:                     12px;
+    margin:                      0px;
+    padding:                     0px;
+}
+
+element {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     12px;
+    border-radius:               10px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      pointer;
+}
+
+element normal.normal {
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+
+element normal.urgent {
+    background-color:            @urgent;
+    text-color:                  @foreground;
+}
+
+element normal.active {
+    background-color:            @active;
+    text-color:                  @foreground;
+}
+
+element selected.normal {
+    background-color:            @selected;
+    text-color:                  @urgent;
+}
+
+element selected.urgent {
+    background-color:            @urgent;
+    text-color:                  @foreground;
+}
+
+element selected.active {
+    background-color:            @urgent;
+    text-color:                  @foreground;
+}
+
+element-icon {
+    background-color:            transparent;
+    text-color:                  inherit;
+    size:                        32px;
+    cursor:                      inherit;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}
+
+message {
+    background-color:            transparent;
+}
+
+textbox {
+    padding:                     12px;
+    border-radius:               10px;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}
+
+error-message {
+    padding:                     15px;
+    border-radius:               0px;
+    background-color:            @background;
+    text-color:                  @foreground;
+}
