@@ -1,5 +1,0 @@
-[plugin]
-deps = [{ use = "yazi-rs/plugins:max-preview", rev = "600614a" }, { use = "yazi-rs/plugins:chmod", rev = "600614a" }]
-
-[flavor]
-deps = []
