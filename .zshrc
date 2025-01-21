@@ -27,13 +27,15 @@ HISTDUPE=erase
 
 # Envs
 export EDITOR=nvim
+export DEFAULT_PLAYER=mpv
+
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
 
 
 
 # Aliases
-alias f="yazi"
+alias f="lf"
 alias gc="git clone"
 alias ls="lsd"
 alias lsa="lsd -A"
