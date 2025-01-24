@@ -1,0 +1,82 @@
+# -------------------- KEYMAPS -------------------- #
+
+
+# UNBIND DEFAULT KEYS
+map c 
+map r
+map v
+
+
+# MODIFIED KEYS
+map . set hidden!
+map <esc> clear
+
+map f filter
+map i invert
+map rr :rename; cmd-delete-home     # delete name before extension
+map rb :rename; cmd-end             # cursor behind extension
+map x cut
+
+map d trash
+map D delete
+
+# SELECTION
+map <c-a> "select all elements"
+
+# COPY PATH & FILENAME
+map cn "copy filename"
+map cx "copy filename with extension"
+map cs "show filename with extension"
+map cd "copy path of current directory"
+map cp "copy filepath"
+
+# FZF
+map <c-f> "start fuzzy finder"
+
+# RIPGREP
+map rg ripgrep
+
+# CREATE FILE & DIRECTORY
+map af "make file"
+map ad "make directory"
+map as "make directory from selections"
+
+# CALCULATE DIR SIZE
+map cs "calculate size of directory"
+
+# ARCHIVES
+map az "create zipfile"
+map ae "extract archive"
+
+# CONVERT FILES
+map v4 "convert to mp4"
+map vv "convert to mkv"
+map vp "convert to png"
+map vj "convert to jpg"
+map vg "convert to gif"
+map v3 "convert to mp3"
+
+# SHORTCUTS
+map gc cd ~/.config
+map gd cd ~/Downloads
+map gh cd ~
+map gt cd ~/.trash
+map gw cd ~/wallpaper
+
+map gn1 cd /mnt/ntfs    # path to my windows-type hard drive
+map gn2 cd /mnt/ntfs2   # path to my windows-type hard drive
+
+# DEFAULT PLAYER
+map o "open in default player"
+
+# CHMOD
+map cm chmodx
+
+# CREATE BACKUP FILE
+map bb "createbackup"
+
+# RELOAD CONFIG
+map rc "reload config file"
+
+# ZOXIDE
+map w zi

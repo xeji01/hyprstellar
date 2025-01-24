@@ -23,7 +23,7 @@
 ln             # LINK
 or             # ORPHAN
 tw      t       # STICKY_OTHER_WRITABLE
-ow             # OTHER_WRITABLE
+ow      󰉋      # OTHER_WRITABLE
 st      t       # STICKY
 di      󰉋       # DIR
 pi      p       # FIFO
@@ -285,11 +285,11 @@ Vagrantfile             
 *.esd   
 
 # image formats (extensions from dircolors defaults)
-*.jpg   
+*.jpg   
 *.jpeg  
 *.mjpg  
 *.mjpeg 
-*.gif   
+*.gif   
 *.bmp   
 *.pbm   
 *.pgm   
@@ -299,7 +299,7 @@ Vagrantfile             
 *.xpm   
 *.tif   
 *.tiff  
-*.png   
+*.png   
 *.svg   
 *.svgz  
 *.mng   
@@ -357,3 +357,9 @@ Vagrantfile             
 *.pdf   
 *.txt   󰈙
 *.srt   󰨖
+*.bak   󰁯
+*.iso	
+
+# custom folder
+Downloads/     
+hyprstellar/   
