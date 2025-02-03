@@ -83,7 +83,7 @@
 		"format-ethernet": "{ipaddr}/{cidr}",
 		"format-linked": "{ifname} (No IP)",
 		"format-disconnected": "󰖪",
-        "on-click": "exec ~/.config/rofi/rofi-wifi-menu/network-manager.sh",
+        "on-click": "exec ~/.config/rofi/rofi-wifi-menu/rofi-wifi-menu.sh",
         "tooltip-format":"Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({bandwidthDownBytes})</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>"	
     },
 

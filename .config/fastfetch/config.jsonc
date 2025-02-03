@@ -39,7 +39,7 @@
         {
             "type": "packages",
             "format": "{} (pacman)",
-            "key": " ",
+            "key": " ",
             "keyColor": "34",  
         },
         {
@@ -64,7 +64,7 @@
         },
         {
             "type": "uptime",
-            "key": " ",
+            "key": " ",
             "keyColor": "34", 
         },
         {
@@ -75,10 +75,9 @@
         },
         {
             "type": "media",
-            "key": "󰝚 ",
+            "key": " ",
             "keyColor": "34", 
         },
-        
         "break",
         {
             "type": "custom",

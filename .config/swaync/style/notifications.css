@@ -36,10 +36,10 @@
   border-radius: 10px;
   margin: 16px;
   padding: 0;
+  transition: background 0.15s ease-in-out;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification {
-  padding: 6px;
   border-radius: 10px;
 }
 
@@ -60,6 +60,7 @@
   background-color: @bg ;
   margin: 6px;
   border: 1px solid transparent;
+  transition: background 0.15s ease-in-out;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action:hover {
@@ -73,8 +74,8 @@
 }
 
 .image {
-  margin: 10px 20px 10px 0px;
-  border-radius: 100px;
+  margin: 0px 12px 0px 0px;
+  border-radius: 5px;
 }
 
 .summary {
