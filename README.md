@@ -6,9 +6,9 @@ a cozy dotfiles for your cozy workflow
 ![image](assets/header.png)
 
 <p align="center">
-  <img src="https://img.shields.io/github/last-commit/xeji01/hyprpop">
-  <img src="https://img.shields.io/github/stars/xeji01/hyprpop?style=flat">
-  <img src="https://img.shields.io/github/repo-size/xeji01/hyprpop">
+  <img src="https://img.shields.io/github/last-commit/xeji01/hyprstellar">
+  <img src="https://img.shields.io/github/stars/xeji01/hyprstellar?style=flat">
+  <img src="https://img.shields.io/github/repo-size/xeji01/hyprstellar">
 </p>
 
 </div>
@@ -36,13 +36,16 @@ Feel free to give this repo a star.
 | Shell              | zsh                                                 |
 | ZSH Prompt         | [Starship](https://github.com/starship/starship)    |
 
-### UI
+### Input & UI
 
-| Type            | Name                                                                    |
-| --------------- | ----------------------------------------------------------------------- |
-| Main Font       | [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads)     |
-| Emoji Font      | [Noto Emoji](https://github.com/googlefonts/noto-emoji)                 |
-| Colorscheme     | [pywal16](https://github.com/eylles/pywal16)                            |
+| Type                   | Name                                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| Main Font              | [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads)                                |
+| Asian Font Collections | [Adobe Source Han Sans](https://archlinux.org/packages/extra/any/adobe-source-han-sans-otc-fonts/) |
+| Emoji Font             | [Noto Emoji](https://github.com/googlefonts/noto-emoji)                                            |
+| Emoji Selector         | [Rofi Emoji](https://github.com/Mange/rofi-emoji)                                                  | 
+| Clipboard Manager      | [Cliphist](https://github.com/sentriz/cliphist)                                                    |
+| Colorscheme            | [pywal16](https://github.com/eylles/pywal16)                                                       |
 
 ### Other
 
@@ -51,9 +54,8 @@ Feel free to give this repo a star.
 | Browser                            | [Librewolf](https://librewolf.net/)                                              |
 | Browser CSS                        | [Fuji Fox](https://github.com/xeji01/fujifox) on my repo ⭐                      |
 | Text Editor                        | [Neovim](https://neovim.io/)                                                     |
-| Terminal File Manager              | [Yazi](https://github.com/sxyazi/yazi)                                           |
-| Wallpaper Backend                  | [Hyprpaper](https://github.com/hyprwm/hyprpaper)                                 |
-| Wallpaper Daemon                   | [Waypaper](https://github.com/anufrievroman/waypaper)                            |
+| Terminal File Manager              | [LF File Manager](https://github.com/gokcehan/lf)                                |
+| Wallpaper Backend                  | [SWWW](https://github.com/LGFae/swww)                                            |
 | Better ls                          | [Lsd](https://github.com/lsd-rs/lsd)                                             |
 | Better cd                          | [Zoxide](https://github.com/ajeetdsouza/zoxide)                                  |
 | AUR Helper                         | [Paru](https://github.com/Morganamilo/paru)                                      |
@@ -65,6 +67,7 @@ Feel free to give this repo a star.
 | Idle Daemon                        | [Hypridle](https://github.com/hyprwm/hypridle)                                   |
 | Power Menu App                     | [Wlogout](https://github.com/ArtsyMacaw/wlogout)                                 |
 | WiFi Menu                          | [rofi-wifi-menu](https://github.com/ericmurphyxyz/rofi-wifi-menu)                |
+| Screen Recorder                    | [wf-recorder](https://github.com/ammen99/wf-recorder)                            |
 
 ### Pywal themes for applications
 
@@ -80,18 +83,18 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 ### Terminal
 
-| **Starship**                                  |
+| Starship                                      |
 | --------------------------------------------- |
 | ![image](assets/starship.png)                 |
 
-| **Yazi**                                      |
+| LF File Manager                               |
 | --------------------------------------------- |
 | ![image](assets/yazi.png)                     |
 | ![image](assets/yazi-maxprev.png)             |
 
-| **Fastfetch**                                 |
+| Fastfetch                                     |
 | --------------------------------------------- |
-| ![image](assets/fastfetch.png)                |
+| ![image](assets/fastfetch2.png)               |
 
 ### Waybar
 
@@ -110,24 +113,29 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 ![image](assets/librewolf.gif)
 
 ### Rofi
+| Dmenu, Emoji, Wifi                                   |
+| ---------------------------------------------------- |
+| ![image](assets/rofi.png)                            |
 
-![image](assets/rofi.jpg)
+| Clipboard                                            |
+| ---------------------------------------------------- |
+| ![image](assets/rofi-clipboard.png)                  |
 
-### Waypaper
+### Wallpaper Selector
 
 ![image](assets/waypaper.png)
 
 ### Neovim
 
-| **Dashboard**                                        |
+| Dashboard                                            |
 | ---------------------------------------------------- |
 | ![image](assets/nvim-alpha.png)                      |
 
-| **Layout**                                           |
+| Layout                                               |
 | ---------------------------------------------------- |
 | ![image](assets/nvim-layout.png)                     |
 
-| **Telescope**                                        |
+| Telescope                                            |
 | ---------------------------------------------------- |
 | ![image](assets/nvim-telescope.png)                  |
 
@@ -141,9 +149,9 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 ### Sway Notification Center
 
-| **Notification Center**                              |
+| Notification Center                                  |
 | ---------------------------------------------------- |
-| ![image](assets/swaync.png) |
+| ![image](assets/swaync.png)                          |
 
 ## Hotkeys
 
@@ -153,32 +161,34 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 > - On most other keyboards, `Super` refers to the `Windows` key.
 
 
-| Key                                           | Command                             |
-| --------------------------------------------- | ----------------------------------- |
-| `Super` + `Enter`                             | Launch Kitty                        |
-| `Super` + `B`                                 | Launch Librewolf                    |
-| `Super` + `E`                                 | Launch Yazi                         |
-| `Super` + `L`                                 | Lockscreen                          |
-| `Super` + `Q`                                 | Kill active window                  |
-| `Super` + `W`                                 | Wifi Menu via Rofi                  |
-| `Super` + `Shift` + `Enter`                   | Floating Kitty                      |
-| `Super` + `Shift` + `B`                       | Launch Waypaper                     |
-| `Super` + `Shift` + `C`                       | Center window                       |
-| `Super` + `Shift` + `E`                       | Exit Hyprland                       |
-| `Super` + `Shift` + `F`                       | Toggle fullscreen                   |
-| `Super` + `Shift` + `O`                       | Restart Waybar                      |
-| `Super` + `Shift` + `R`                       | Restart Hyprland                    |
-| `PrntScrn`                                    | Take screenshot of the entire screen|
-| `Ctrl` + `PrntScrn`                           | Take screenshot of selected area    |
-| `Ctrl` + `Shift` + `PrntScrn`                 | Take screenshot of selected window  |
-| `Ctrl` + `Super` + `Arrow down/up/left/right` | Resize window                       |
+| Key                                           | Command                              |
+| --------------------------------------------- | ------------------------------------ |
+| `Super` + `Enter`                             | Launch Kitty                         |
+| `Super` + `B`                                 | Launch Librewolf                     |
+| `Super` + `E`                                 | Launch LF File Manager               |
+| `Super` + `L`                                 | Lockscreen                           |
+| `Super` + `Q`                                 | Kill active window                   |
+| `Super` + `W`                                 | Wifi Menu via Rofi                   |
+| `Super` + `Shift` + `Enter`                   | Floating Kitty                       |
+| `Super` + `Shift` + `B`                       | Launch wallpaper selector            |
+| `Super` + `Shift` + `C`                       | Center window                        |
+| `Super` + `Shift` + `E`                       | Exit Hyprland                        |
+| `Super` + `Shift` + `F`                       | Toggle fullscreen                    |
+| `Super` + `Shift` + `L`                       | Launch power menu                    |
+| `Super` + `Shift` + `O`                       | Restart Waybar                       |
+| `Super` + `Shift` + `R`                       | Restart Hyprland                     |
+| `PrntScrn`                                    | Take screenshot of the entire screen |
+| `Ctrl` + `PrntScrn`                           | Take screenshot of selected area     |
+| `Ctrl` + `Shift` + `PrntScrn`                 | Take screenshot of selected window   | 
+| `Ctrl` + `Super` + `Arrow down/up/left/right` | Resize window                        |
 
 Other hotkeys can be found here `~/.config/hypr/configs/binds.conf`
 
 ## TODO
 - [ ] bluetooth daemon
-- [ ] volume & brightness notification script
-- [x] make a custom hyprlock
+- [x] switch from yazi to lf
+- [x] volume & brightness notification script
+- [x] adding avatar to hyprlock
 - [x] make a custom waybar
 - [x] make a custom rofi
 - [x] make a minimal Librewolf CSS
