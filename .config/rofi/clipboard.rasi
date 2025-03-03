@@ -7,7 +7,7 @@ configuration {
 }
 
 * {
-    font:                        "JetBrains Mono Nerd Font Bold 10";
+    font:                        "Nothing Font (5x7) Bold 10";
     background:                  transparent;
     background-alt:              rgba(0,0,0,0.3);
     foreground:                  @selected-urgent-background;

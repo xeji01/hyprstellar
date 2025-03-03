@@ -19,7 +19,7 @@
 
   all: unset;
   font-size: 14px;
-  font-family: "JetBrainsMono Nerd Font";
+  font-family: "Nothing Font (5x7)";
   transition: 200ms;
 
 }
@@ -33,7 +33,7 @@
 .floating-notifications.background .notification-row .notification-background {
   background: @bg;
   border: 2px solid @bg;
-  border-radius: 10px;
+  border-radius: 6px;
   margin: 16px;
   padding: 0;
   transition: background 0.15s ease-in-out;

@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+
+file=$1 w=$2 h=$3 x=$4 y=$5
+
+# Image preview is handled by the kitty graphics protocol.
+# See: https://sw.kovidgoyal.net/kitty/graphics-protocol/
+preview() {
+    kitten icat --silent --stdin no --transfer-mode memory --scale-up --place "${w}x${h}@${x}x${y}" "$1" < /dev/null > /dev/tty
+}
+
+tmp="$XDG_CACHE_HOME"/lf-preview
+mkdir -p $tmp
+
+file="$1"
+shift
+case "$(basename "$file" | tr '[A-Z]' '[a-z]')" in
+    *.[1-8]) man -- "$1" | col -b ;;
+    *.tgz | *.tar.gz) tar tzf "$1" ;;
+    *.tar.bz2 | *.tbz2) tar tjf "$1" ;;
+    *.tar.txz | *.txz) xz --list "$1" ;;
+    *.tar*) tar tf "$file" ;;
+    *.zip) unzip -l "$file" ;;
+    *.rar) unrar l "$file" ;;
+    *.7z) 7z l "$file" ;;
+    *.htm | *.html | *.xhtml) w3m -dump "$1" ;;
+    *.docx | *.odt | *.epub) pandoc -s -t plain -- "$1" ;;
+    *.md) glow -s dark -w $w "$file" ;;
+    *.avi | *.mp4 | *.mkv)
+        thumbnail="$tmp/thumbnail.png"
+        ffmpeg -y -i "$file" -vframes 1 "$thumbnail"
+        preview "$thumbnail"
+        ;;
+    *.pdf)
+        thumbnail="$tmp/thumbnail.png"
+        gs -o "$thumbnail" -sDEVICE=pngalpha -dLastPage=1 "$file" > /dev/null
+        preview "$thumbnail"
+        ;;
+    *.jpg | *.jpeg | *.png | *.bmp | *.gif)
+        preview "$file"
+        ;;
+    *.ttf | *.otf | *.woff)
+        thumbnail="$tmp/thumbnail.png"
+        # https://github.com/sdushantha/fontpreview
+        fontpreview -i "$file" -o "$thumbnail"
+        preview "$thumbnail"
+        ;;
+    *.svg)
+        thumbnail="$tmp/thumbnail.png"
+        convert "$file" "$thumbnail"
+        preview "$thumbnail"
+        ;;
+    *) bat "$file" ;;
+esac
+
+# nonzero retcode required for lf previews to reload
+return 127

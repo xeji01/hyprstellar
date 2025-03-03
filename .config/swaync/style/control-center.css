@@ -12,7 +12,7 @@
 
   all: unset;
   font-size: 14px;
-  font-family: "JetBrainsMono Nerd Font";
+  font-family: "Nothing Font (5x7)";
   transition: 200ms;
 
 }
@@ -206,8 +206,10 @@ progressbar {
   /* Background need *opacity 1* otherwise will turn into the album art blurred  */
 .widget-mpris-player {
     border-radius: 6px;
-    padding: 6px 6px;
-    margin: 5px;
+    padding: 10px;
+    margin: 10px;
+    background-color: @mpris-album-art-overlay;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, .65);
 }
  
 .widget-mpris button {
@@ -222,14 +224,15 @@ progressbar {
 
 .widget-mpris-album-art {
   border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
 }
  
 .widget-mpris-title {
     font-weight: bold;
-    font-size: 14px;
+    font-size: .90rem;
 }
  
 .widget-mpris-subtitle {
     font-weight: normal;
-    font-size: 12px;
+    font-size: .80rem;
 }

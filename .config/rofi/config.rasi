@@ -1,4 +1,4 @@
-@theme "~/.cache/wal/colors-rofi-dark.rasi"
+@theme "~/.cache/wal/colors-rofi-light.rasi"
 
 configuration {
 	modi:                       "drun,emoji";
@@ -10,10 +10,10 @@ configuration {
 }
 
 * {
-    font:                        "JetBrains Mono Nerd Font Bold 10";
+    font:                        "Nothing Font (5x7) Bold 10";
     background:                  transparent;
     background-alt:              rgba(0,0,0,0.3);
-    foreground:                  @selected-urgent-background;
+    foreground:                  @selected-active-background;
     selected:                    rgba(0,0,0,0.5);
     active:                      #909090;
     urgent:                      #707070;
@@ -31,9 +31,11 @@ window {
 
     /* properties for all widgets */
     enabled:                     true;
-    border-radius:               20px;
+    border-radius:               8px;
     cursor:                      "default";
     background-color:            @background;
+    border:                      1px solid;
+    border-color:                rgba(255,255,255,0.1);
 }
 
 mainbox {
