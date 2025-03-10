@@ -11,8 +11,8 @@
   color:            @text;
 
   all: unset;
-  font-size: 14px;
-  font-family: "Nothing Font (5x7)";
+  font-size: 15px;
+  font-family: "Ndot55";
   transition: 200ms;
 
 }
@@ -26,7 +26,7 @@
 
 .control-center {
   background: @bg;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 2px solid @bg;
   margin: 18px;
   padding: 12px;
@@ -40,7 +40,7 @@
   border: 2px solid @hover;
   border-radius: 6px;
   margin: 4px 0px;
-  padding: 4px;
+  padding: 2px;
 }
 
 .control-center .notification-row .notification-background .notification.critical {
@@ -75,7 +75,7 @@
 
 .control-center .notification-row .notification-background .close-button {
   background: transparent;
-  border-radius: 6px;
+  border-radius: 3px;
   color: @text;
   margin: 0px;
   padding: 4px;
@@ -92,7 +92,7 @@
 progressbar,
 progress,
 trough {
-  border-radius: 12px;
+  border-radius: 6px;
 }
 
 progressbar {
@@ -149,7 +149,6 @@ progressbar {
   /* ------------ Notification clear button --------------- */
 
 .widget-title {
-  font-size: 16px;
   font-weight: bold;
   color: @main-color;
   margin: 6px;
@@ -157,7 +156,7 @@ progressbar {
 
 .widget-title button {
   background: @background-alt;
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 4px 10px;
 }
 
@@ -172,14 +171,13 @@ progressbar {
   /* Do not disturb */
 .widget-dnd {
   margin: 6px;
-  font-size: 16px;
   font-weight: bold;
   color: @main-color;
 }
 
 .widget-dnd > switch {
   background: @background-alt;
-  border-radius: 15px;
+  border-radius: 20px;
   box-shadow: none;
   padding: 3px;
 }
@@ -198,7 +196,7 @@ progressbar {
 
 .widget-dnd > switch slider {
   background: @text;
-  border-radius: 15px;
+  border-radius: 20px;
 }
 
 /* -------------------- Music player ---------------------- */
@@ -219,20 +217,21 @@ progressbar {
 .widget-mpris button:hover {
   background: alpha(@main-color, 0.5);
   color: @background-alt;
-  border-radius: 8px;
+  border-radius: 3px;
 }
 
 .widget-mpris-album-art {
-  border-radius: 5px;
+  border-radius: 3px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
 }
  
 .widget-mpris-title {
     font-weight: bold;
-    font-size: .90rem;
+    font-size: 1.10rem;
+    padding-bottom: 2px;
 }
  
 .widget-mpris-subtitle {
     font-weight: normal;
-    font-size: .80rem;
+    font-size: 0.85rem;
 }

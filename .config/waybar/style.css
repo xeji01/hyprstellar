@@ -5,9 +5,9 @@
 * {
     border: none;
     border-radius: 0px;
-    font-family: "Ndot";
+    font-family: "Ndot55, DepartureMono Nerd Font";
     font-weight: bold;
-    font-size: 14px;
+    font-size: 15px;
     min-height: 0;
 }
 
@@ -77,11 +77,10 @@ tooltip label {
 #window,
 #clock,
 #battery,
-#pulseaudio,
 #network,
+#memory,
 #bluetooth,
-#workspaces,
-#backlight {
+#workspaces {
     padding: 0px 14px 0px 14px;
 }
 
@@ -105,25 +104,19 @@ tooltip label {
 
 #bluetooth {
     color: lighter(@main-color);
-    background: alpha(@background, 0.3);
+    background: transparent;
 } 
-
-#pulseaudio {
-    color: lighter(@main-color);
-    background: transparent;
-}
-
-#pulseaudio.microphone {
-    color: lighter(@main-color);
-    background: transparent;
-}
 
 #battery {
     color: lighter(@main-color);
     background: transparent;
 }
 
-#backlight {
+#memory {
     color: lighter(@main-color);
     background: transparent;
+}
+
+#calendar {
+    font-family: "DepartureMono Nerd Font";
 }

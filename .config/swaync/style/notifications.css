@@ -8,18 +8,11 @@
 @define-color bg              alpha(@main-color, 0.1);
 
 * {
-
-  /*background-alt:        @color1;      Buttons background */
-  /*selected:              @color2;      Button selected */
-  /*hover:                 @color5;      Hover button */
-  /*urgent:                @color6;      Urgency critical */
-  /*text-selected:         @background; */
-
   color: @text;
 
   all: unset;
-  font-size: 14px;
-  font-family: "Nothing Font (5x7)";
+  font-size: 18px;
+  font-family: "Ndot55";
   transition: 200ms;
 
 }
@@ -79,14 +72,17 @@
 }
 
 .summary {
+  font-family: Ndot55Caps;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
   color: @main-color;
-  padding-bottom: 1px;
+  padding-bottom: 3px;
 }
 
 .body {
   font-size: 14px;
+  font-family: Ndot55;
+  font-weight: normal;
 }
 
 .floating-notifications.background .notification-row .notification-background .close-button {

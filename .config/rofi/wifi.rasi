@@ -3,14 +3,14 @@
 configuration {
 	modi:                       "drun,emoji";
     show-icons:                 false;
-    display-drun:               "󰄶";
-    display-emoji:              "󰱨";
+    display-drun:               "󰄶 ";
+    display-emoji:              "😀";
 	drun-display-format:        "{name}";
 	window-format:              "{w} · {c} · {t}";
 }
 
 * {
-    font:                        "Ndot55 Bold 11.5";
+    font:                        "DepartureMono Nerd Font Bold 11.5";
     background:                  transparent;
     background-alt:              rgba(0,0,0,0.2);
     foreground:                  white;
@@ -26,7 +26,7 @@ window {
     anchor:                      center;
     fullscreen:                  false;
     width:                       600px;
-    height:                      290px;
+    height:                      300px;
     x-offset:                    0px;
     y-offset:                    0px;
 
@@ -51,7 +51,7 @@ listbox {
     spacing:                     5px;
     background-color:            transparent;
     orientation:                 vertical;
-    children:                    [ "message", "mode-switcher", "listview" ];
+    children:                    [ "message", "listview", "mode-switcher" ];
 }
 
 inputbar {
@@ -85,7 +85,7 @@ mode-switcher{
 }
 
 button {
-    padding:                     5px 5px 10px 5px;
+    padding:                     8px 0px;
     border-radius:               4px;
     background-color:            @background-alt;
     text-color:                  inherit;
@@ -109,7 +109,7 @@ listview {
     fixed-height:                true;
     fixed-columns:               true;
     
-    spacing:                     2px;
+    spacing:                     8px 0px;
     background-color:            transparent;
     text-color:                  @foreground;
     cursor:                      "default";

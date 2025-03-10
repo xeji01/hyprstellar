@@ -15,8 +15,9 @@ a cozy dotfiles for your cozy workflow
 
 > [!WARNING]\
 > Keep in mind that this is my daily driver.\
-You might need to adjust some parts for your particular system, so please make sure to back up your configs first.\
-Feel free to give this repo a star.
+You might need to adjust some parts for your particular system, make sure to back up your configs first.
+
+> Feel free to leave this repo a star ⭐.
 
 - [Software Used](#software-used)
 - [Screenshots](#screenshots)
@@ -40,19 +41,18 @@ Feel free to give this repo a star.
 
 | Type                   | Name                                                                                               |
 | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| Main Font              | [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads)                                |
+| Main Font              | [Nothing Font](https://github.com/xeji01/nothingfont)                                              |
+|                        | [Departure Mono](https://www.nerdfonts.com/font-downloads)                                         |
 | Asian Font Collections | [Adobe Source Han Sans](https://archlinux.org/packages/extra/any/adobe-source-han-sans-otc-fonts/) |
 | Emoji Font             | [Noto Emoji](https://github.com/googlefonts/noto-emoji)                                            |
 | Emoji Selector         | [Rofi Emoji](https://github.com/Mange/rofi-emoji)                                                  | 
 | Clipboard Manager      | [Cliphist](https://github.com/sentriz/cliphist)                                                    |
-| Colorscheme            | [pywal16](https://github.com/eylles/pywal16)                                                       |
+| Colorscheme            | [Pywal16](https://github.com/eylles/pywal16)                                                       |
 
-### Other
+### Utilities
 
 | Type                               | Name                                                                             |
 | ---------------------------------- | -------------------------------------------------------------------------------- |
-| Browser                            | [Librewolf](https://librewolf.net/)                                              |
-| Browser CSS                        | [Fuji Fox](https://github.com/xeji01/fujifox) on my repo ⭐                      |
 | Text Editor                        | [Neovim](https://neovim.io/)                                                     |
 | Terminal File Manager              | [LF File Manager](https://github.com/gokcehan/lf)                                |
 | Wallpaper Backend                  | [SWWW](https://github.com/LGFae/swww)                                            |
@@ -60,20 +60,31 @@ Feel free to give this repo a star.
 | Better cd                          | [Zoxide](https://github.com/ajeetdsouza/zoxide)                                  |
 | AUR Helper                         | [Paru](https://github.com/Morganamilo/paru)                                      |
 | App Launcher                       | [Rofi](https://github.com/davatorium/rofi)                                       |
-| Screenshot Utility                 | [Hyprshot](https://github.com/Gustash/Hyprshot)                                  |
 | System Info                        | [Fastfetch](https://github.com/fastfetch-cli/fastfetch)                          |
-| Notification Daemon/Control Center | [Sway Notification Center](https://github.com/ErikReider/SwayNotificationCenter) |
+| Notification Daemon                | [Sway Notification Center](https://github.com/ErikReider/SwayNotificationCenter) |
 | Lockscreen App                     | [Hyprlock](https://github.com/hyprwm/hyprlock)                                   |
 | Idle Daemon                        | [Hypridle](https://github.com/hyprwm/hypridle)                                   |
 | Power Menu App                     | [Wlogout](https://github.com/ArtsyMacaw/wlogout)                                 |
-| WiFi Menu                          | [rofi-wifi-menu](https://github.com/ericmurphyxyz/rofi-wifi-menu)                |
-| Screen Recorder                    | [wf-recorder](https://github.com/ammen99/wf-recorder)                            |
+| WiFi Menu                          | [Wifi-Menu](https://github.com/podobu/wifimenu)                                  |
+| Screenshot Utility                 | [Hyprshot](https://github.com/Gustash/Hyprshot)                                  |
+| Screen Recorder                    | [WF-Recorder](https://github.com/ammen99/wf-recorder)                            |
+| Blue Light Filter                  | [Hyprshade](https://github.com/loqusion/hyprshade)                               |
 
-### Pywal themes for applications
+### Browser
 
 | Type                  | Name                                                                                          |
 | --------------------- | --------------------------------------------------------------------------------------------- |
+| Browser               | [Librewolf](https://librewolf.net/)                                                           |
+| Browser CSS           | [Fuji Fox](https://github.com/xeji01/fujifox) on my repo                                      |
 | Librewolf Pywal Theme | [Pywalfox](https://addons.mozilla.org/ru/firefox/addon/pywalfox/)                             |
+| Browser UI Font       | [Nothing Font](https://github.com/xeji01/nothingfont)                                         | 
+
+### Multimedia
+
+| Type                  | Name                                                            |
+| --------------------- | --------------------------------------------------------------- |
+| Video Player          | [MPV](https://mpv.io)                                           |
+| Spotify               | [Spicetify Lucid](https://github.com/sanoojes/Spicetify-Lucid)  |
 
 ### Wallpapers
 
@@ -90,7 +101,6 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 | LF File Manager                               |
 | --------------------------------------------- |
 | ![image](assets/yazi.png)                     |
-| ![image](assets/yazi-maxprev.png)             |
 
 | Fastfetch                                     |
 | --------------------------------------------- |
@@ -110,12 +120,15 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 ### Librewolf
 
-![image](assets/librewolf.gif)
-
+![image](assets/librewolf.gif)  
+![image](assets/homepage.png)
 ### Rofi
-| Dmenu, Emoji, Wifi                                   |
-| ---------------------------------------------------- |
-| ![image](assets/rofi.png)                            |
+
+| Launcher                       | Emoji                           |
+| ------------------------------ | ------------------------------- |
+| ![image](assets/rofi-apps.png) | ![image](assets/rofi-emoji.png) |
+
+
 
 | Clipboard                                            |
 | ---------------------------------------------------- |
@@ -127,17 +140,9 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 ### Neovim
 
-| Dashboard                                            |
-| ---------------------------------------------------- |
-| ![image](assets/nvim-alpha.png)                      |
-
-| Layout                                               |
-| ---------------------------------------------------- |
-| ![image](assets/nvim-layout.png)                     |
-
-| Telescope                                            |
-| ---------------------------------------------------- |
-| ![image](assets/nvim-telescope.png)                  |
+| Dashboard                                            | Telescope                                            | 
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| ![image](assets/nvim-alpha.png)                      | ![image](assets/nvim-telescope.png)                  |
 
 ### Wlogout
 
@@ -149,9 +154,11 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 ### Sway Notification Center
 
-| Notification Center                                  |
-| ---------------------------------------------------- |
-| ![image](assets/swaync.png)                          |
+| Control Center                | Notification Pop-Up                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| ![image](assets/swaync.png)   | ![image](assets/notif.png)![image](assets/volume.png)![image](assets/notif.png) |
+
+
 
 ## Hotkeys
 
@@ -163,18 +170,20 @@ Check out my wallpapers [repository](https://github.com/xeji01/wallpaper)
 
 | Key                                           | Command                              |
 | --------------------------------------------- | ------------------------------------ |
-| `Super` + `Enter`                             | Launch Kitty                         |
-| `Super` + `B`                                 | Launch Librewolf                     |
-| `Super` + `E`                                 | Launch LF File Manager               |
+| `Super` + `Enter`                             | Kitty                                |
+| `Super` + `A`                                 | Select random wallpaper              |
+| `Super` + `B`                                 | Librewolf                            |
+| `Super` + `E`                                 | LF File Manager                      |
 | `Super` + `L`                                 | Lockscreen                           |
 | `Super` + `Q`                                 | Kill active window                   |
+| `Super` + `R`                                 | Screen Recording                     |
 | `Super` + `W`                                 | Wifi Menu via Rofi                   |
 | `Super` + `Shift` + `Enter`                   | Floating Kitty                       |
-| `Super` + `Shift` + `B`                       | Launch wallpaper selector            |
+| `Super` + `Shift` + `B`                       | Wallpaper Selector                   |
 | `Super` + `Shift` + `C`                       | Center window                        |
 | `Super` + `Shift` + `E`                       | Exit Hyprland                        |
 | `Super` + `Shift` + `F`                       | Toggle fullscreen                    |
-| `Super` + `Shift` + `L`                       | Launch power menu                    |
+| `Super` + `Shift` + `L`                       | Power Menu                           |
 | `Super` + `Shift` + `O`                       | Restart Waybar                       |
 | `Super` + `Shift` + `R`                       | Restart Hyprland                     |
 | `PrntScrn`                                    | Take screenshot of the entire screen |
@@ -194,4 +203,4 @@ Other hotkeys can be found here `~/.config/hypr/configs/binds.conf`
 - [x] make a minimal Librewolf CSS
 
 ## Credits
-Layout inspired by [vernette's](https://github.com/vernette/hyprsnap) dotfiles
+

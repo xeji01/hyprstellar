@@ -1,8 +1,8 @@
 @import "../../.cache/wal/colors-waybar.css";
 
 * {
-    font-size: 18px;
-    font-family: "Nothing Font (5x7)";
+    font-size: 17px;
+    font-family: "Ndot55";
 	border-radius: 10px;
 }
 
@@ -23,7 +23,7 @@ button {
 
 button:hover,
 button:focus {
-    color: @color7;
+    color: @foreground;
     background-color: @color1;
     background-size: 40%;
 }

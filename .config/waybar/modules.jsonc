@@ -11,7 +11,7 @@
 
 	"clock": {
 		"format": "{:%I:%M %p}",
-		"tooltip-format": "{calendar}",
+		"tooltip-format": "<tt><small>{calendar}</small></tt>",
 		"calendar": {
 			"format": {
 				"months": "<span color='#ffead3'><b>{}</b></span>",
@@ -21,81 +21,45 @@
 		}
 	},
 
-	"backlight": {
-		"device": "intel_backlight",
-		"format": "{icon} {percent}%",
-		"format-icons": ["󰃞", "󰃟", "󰃠"],
-		"on-scroll-up": "brightnessctl set 10%+",
-		"on-scroll-down": "brightnessctl set 10%-",
-		"min-length": 6
-	},
-
 	"battery": {
 		"states": {
 			"good": 95,
 			"warning": 30,
 			"critical": 20
 		},
-		"format": "{icon} {capacity}",
-		//"format-charging": " {capacity}",
-        "format-charging": "󱐮 {capacity}",
-		//"format-plugged": " {capacity}",
-        "format-plugged": "󱐮 {capacity}",
-		"format-alt": "{time} {icon}",
+		"format": "{icon}   {capacity}",
+		//"format-charging": "   {capacity}",
+        //"format-plugged": "    {capacity}",
+        "format-charging": "󰋠   {capacity}",
+		"format-plugged": "󰋠    {capacity}",
+		"format-alt": "{time}   {icon}",
         "format-icons": ["󱢠 󱢠 󱢠 ","󱢠 󱢠 󰛞 ","󱢠 󱢠 󰋑 ","󱢠 󰛞 󰋑 ","󱢠 󰋑 󰋑 ","󰛞 󰋑 󰋑 ","󰋑 󰋑 󰋑 "]
 		//"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
 		//"format-icons": [" ", " ", " ", " ", " "]
 	},
 
-	"pulseaudio": {
-		"format": "{icon} {volume}%",
-		"tooltip": false,
-		"format-muted": " Muted",
-		"on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
-		"on-click-right": "pavucontrol",
-		"on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_SINK@ 5%+",
-		"on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-",
-		"scroll-step": 5,
-		"format-icons": {
-			"headphone": "",
-			"hands-free": "",
-			"headset": "",
-			"phone": "",
-			"portable": "",
-			"car": "",
-			"default": ["", "", " "]
-		}
-	},
-
-	"pulseaudio#microphone": {
-		"format": "{format_source}",
-		"format-source": " {volume}%",
-		"format-source-muted": "  Muted",
-		"on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle",
-		"on-click-right": "pavucontrol",
-		"on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_SOURCE@ 5%+",
-		"on-scroll-down": "wpctl set-volume -l 1 @DEFAULT_SOURCE@ 5%-",
-		"scroll-step": 5
-	},
-
 	"network": {
-		"format-wifi": "  {signalStrength}%",
+		"format-wifi": "    {signalStrength}%",
 		"format-ethernet": "{ipaddr}/{cidr}",
 		"format-linked": "{ifname} (No IP)",
-		"format-disconnected": "󰖪",
-        "on-click": "exec ~/.config/rofi/rofi-wifi-menu/rofi-wifi-menu.sh",
+		"format-disconnected": "󰖪 ",
+        "on-click": "exec ~/.config/rofi/assets/wifimenu --rofi -s",
         "tooltip-format":"Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({bandwidthDownBytes})</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>"	
     },
 
 	"bluetooth": {
-		"format": " {status}",
+		"format": "󰂯    {status}",
 		"format-disabled": " off",
 		"format-connected": " {num_connections}",
 		"tooltip-format": "{device_alias}",
 		"tooltip-format-connected": " {device_enumerate}",
 		"tooltip-format-enumerate-connected": "{device_alias}",
-		"on-click": "bluetoothctl toggle"
+		"on-click": ""
 	},
+
+    "memory": {
+    "format": "    {:2}%",
+    },
 
     "group/custom-group": {
         "orientation": "inherit",
@@ -105,9 +69,8 @@
         },
         "modules": [
         "battery",
-        "backlight",
-        "pulseaudio",
-        "network" ]
+        "memory",
+        "network"]
     }
 }
 

@@ -43,13 +43,13 @@
 
   "widget-config": {
     "title": {
-      "text": "Notifications",
+      "text": "NOTIFICATIONS",
       "clear-all-button": true,
-      "button-text": "󰩺  Clear"
+      "button-text": "󰩺  CLEAR"
     },
 
     "dnd": {
-      "text": "Do not disturb"
+      "text": "FUCK OFF"
     },
 
     "mpris": {

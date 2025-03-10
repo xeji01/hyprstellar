@@ -4,7 +4,7 @@
     "logo": {
     	"source": "~/.config/fastfetch/kurose-tendo-circle.png",
     	"type": "kitty",
-    	"height": 12,
+    	"height": 10,
     	"padding": {
     		"top": 5
     	}
@@ -60,17 +60,6 @@
         {
             "type": "terminalfont",
             "key": " ",
-            "keyColor": "34", 
-        },
-        {
-            "type": "uptime",
-            "key": " ",
-            "keyColor": "34", 
-        },
-        {
-            "type": "datetime",
-            "format": "{1}-{3}-{11}",
-            "key": " ",
             "keyColor": "34", 
         },
         {
