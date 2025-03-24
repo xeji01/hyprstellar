@@ -1,0 +1,412 @@
+# -------------------- COMMANDS -------------------- #
+
+
+# ---------- TRASH BIN ----------
+
+$mkdir -p ~/.trash
+
+cmd trash %{{
+    printf "   move $fx to trash bin? [y/n] " $fx
+    read -r ans
+    if [ "$ans" = "y" ]; then
+        mv $fx ~/.trash
+        echo "   moved to trash bin successfully"
+        lf -remote "send $id :reload;unselect"
+    else
+        echo "   aborted"
+    fi
+}}
+
+
+
+# ---------- DELETE PERMANENTLY ----------
+
+cmd delete %{{
+    printf "   delete $fx permanently? [y/n] " $fx
+    read -r ans
+    if [ "$ans" = "y" ]; then
+        rm -rv $fx
+        #| pv -l -s $(find $fx | wc -l) > /dev/null
+        echo "   deleted successfully"
+        lf -remote "send $id :reload;unselect"
+     else
+        echo "   aborted"
+     fi
+}}
+
+
+
+# ---------- SELECTION ----------
+
+cmd "select all elements" %{{
+    lf -remote "send $id glob-select *"
+}}
+
+
+
+# ---------- COPY WITH PROGRESS ----------
+
+#require rsync
+
+cmd paste &{{
+    set -- $(cat ~/.local/share/lf/files)
+    mode="$1"
+    shift
+    
+    ICON_PATH="$HOME/.config/lf/configs/icons/copy-move.png"
+
+    if [[ $@ != "" ]]; then
+        lf -remote "send $id echo ' 󱥸  calculating files...'"
+        nof=$(rsync -ar --dry-run --stats "$@" . | grep -F 'Number of files' |    cut -d' ' -f4 |    tr -d ,)
+
+        case "$mode" in
+            copy)
+                for file in "$@"; do
+                    if ! [[ -O "$file" ]]; then
+                        printf "   by copying these files the owner and group will be changed to the current user and group. continue? (y/n) "
+                        read -r ans
+                        if [ "$ans" = "y" ]; then
+                            rsync -arhz --info=progress2 -- "$@" . |
+                            stdbuf -i0 -o0 -e0 tr '\r' '\n' |
+                            while IFS= read -r line; do
+                                lf -remote "send $id echo ' 󰆏 '$line"
+                            done
+
+                            lf -remote "send $id :clear;reload"
+                            lf -remote "send $id echo '   $nof file(s) copied successfully'"
+                            notify-send "lf file manager - status" "  $nof file(s) copied successfully" -i "$ICON_PATH"
+                            exit 0
+                        else
+                            #lf -remote "send $id echo '   aborted'"
+                            lf -remote "send $id echo '   permission denied! one or more of the selected files are not owned by you and so can not be copied'"  
+                            exit 1
+                        fi  
+                    fi
+                done
+
+                rsync -arh --info=progress2 -- "$@" . |
+                stdbuf -i0 -o0 -e0 tr '\r' '\n' |
+                while IFS= read -r line; do
+                    lf -remote "send $id echo ' 󰆏 '$line"
+                done
+
+                lf -remote "send $id :clear;reload"	
+                lf -remote "send $id echo '   $nof file(s) copied successfully'"
+                notify-send "lf file manager - status" "  $nof file(s) copied successfully" -i "$ICON_PATH"
+                exit 0	
+                ;;
+        move)
+            for file in "$@"; do
+                if ! [[ -O "$file" ]]; then	
+                    lf -remote "send $id echo '   permission denied! one or more of the selected files are not owned by you and so can not be moved'"  
+                    exit 1
+                fi
+            done
+
+            rsync -arhz --info=progress2 --remove-source-files -- "$@" . |
+            stdbuf -i0 -o0 -e0 tr '\r' '\n' |
+            while IFS= read -r line; do
+               lf -remote "send $id echo ' 󱀱 '$line"
+            done
+            
+            if [ find $@ -type f | read ]; then
+                lf -remote "send $id echo '   not all files have been moved'";
+            else
+                find $@ -type d -empty -delete
+            fi
+
+            lf -remote "send $id :clear;reload"
+            lf -remote "send $id echo '   $nof file(s) moved successfully'"
+            notify-send "lf file manager - status" "  $nof file(s) moved successfully" -i "$ICON_PATH"
+            exit 0
+            ;;
+        esac
+    else
+        exit 1
+    fi
+
+    rm ~/.local/share/lf/files
+}}
+
+
+
+# ---------- COPY PATH & FILENAME ----------
+
+cmd "copy filename" &{{
+    file=${f##*/}
+    name=${file%.*}
+    printf $name | wl-copy
+    lf -remote "send $id echo ' 󱉣  copied \"$name\" to clipboard'"
+}}
+
+cmd "copy filename with extension" &{{
+    file=${f##*/}
+    printf $file | wl-copy
+    lf -remote "send $id echo ' 󱉣  copied \"$file\" to clipboard'"
+}}
+
+cmd "show filename with extension" &{{
+    file=${f##*/}
+    lf -remote "send $id echo '   full file name: \"$file\"'"
+}}
+
+cmd "copy filepath" &{{
+    printf "$fx" | wl-copy
+    lf -remote "send $id echo ' 󱉣  copied \"$fx\" to clipboard'"
+}}
+
+cmd "copy path of current directory" &{{
+    printf $(pwd) | wl-copy
+    lf -remote "send $id echo ' 󱉣  copied \"$(pwd)\" to clipboard'"
+}}
+
+
+
+# ---------- FUZZY FINDER ----------
+
+cmd "start fuzzy finder" ${{
+#lf -remote "send cd ~/"
+    res="$(fd --hidden --ignore-case . | fzf --border --header='  jump to location')"
+        if [ -f "$res" ]; then
+            cmd="select"
+        elif [ -d "$res" ]; then
+            cmd="cd"
+        fi
+        
+        lf -remote "send $id $cmd \"$res\""
+}}
+
+
+
+# ---------- RIPGREP ----------
+
+cmd ripgrep ${{
+    cmd="rg --column --line-number --no-heading --color=always --smart-case"
+    fzf --ansi --disabled --layout=reverse --header="Search in files" --delimiter=: \
+        --bind="start:reload([ -n {q} ] && $cmd -- {q} || true)" \
+        --bind="change:reload([ -n {q} ] && $cmd -- {q} || true)" \
+        --bind='enter:become(lf -remote "send $id select \"$(printf "%s" {1} | sed '\''s/\\/\\\\/g;s/"/\\"/g'\'')\"")' \
+        --preview='cat -- {1}' # Use your favorite previewer here (bat, source-highlight, etc.), for example:
+        #--preview-window='+{2}-/2' \
+        #--preview='bat --color=always --highlight-line={2} -- {1}'
+        # Alternatively you can even use the same previewer you've configured for lf
+        #--preview='~/.config/lf/cleaner; ~/.config/lf/previewer {1} "$FZF_PREVIEW_COLUMNS" "$FZF_PREVIEW_LINES" "$FZF_PREVIEW_LEFT" "$FZF_PREVIEW_TOP"'
+}}
+
+
+
+# ---------- CREATE FILE & DIRECTORY ----------
+
+cmd "make directory" %{{
+    printf " 󰉗  create new directory: "
+    read ans
+    mkdir $ans
+    lf -remote "send $id echo ' 󰉗  created directory \"$ans\"'"
+}}
+
+
+cmd "make file" %{{
+    printf " 󰝒  create new file: "
+    read ans
+    touch $ans
+    lf -remote "send $id echo ' 󰝒  created file \"$ans\"'"
+}}
+
+
+cmd "make directory from selections" ${{
+  printf " 󰉗  create new directory: "
+  read ans
+  mkdir -- "$ans"
+  mv -- $fx "$ans"
+  lf -remote "send $id echo ' 󰝒  created directory \"$ans\"'"
+}}
+
+
+# ---------- CALCULATE DIR SIZE ----------
+
+cmd "calculate size of directory" &{{
+    lf -remote "send $id set info size"
+    lf -remote "send $id set dircounts false"
+    lf -remote "send calcdirsize"
+}}
+
+
+
+# ---------- ARCHIVES ----------
+
+cmd "create zipfile" %{{
+    printf " 󱝣  create new zipfile: "
+    read ans
+    origd="$(pwd)"
+    tempd="$(mktemp -d)"
+    pushd "$tempd"
+    rsync -arhz --info=progress2 -- $fx . 
+    7z a -r -tzip "$ans" *
+    rsync -arhz --info=progress2 -- "$ans".zip "$origd/"
+    popd
+    rm -rf "$tempd" 
+    lf -remote 'send :reload;unselect'
+    lf -remote "send $id echo ' 󱝣  created zipfile \"$ans.zip\"'"
+}}
+
+cmd "create encrypted zipfile" ${{
+    printf " 󱝣  create new encrypted zipfile: "
+    read ans
+    #printf " 󰯄  set password: "
+    #read psw
+    origd="$(pwd)"
+    tempd="$(mktemp -d)"
+    pushd "$tempd"
+    rsync -arhz --info=progress2 -- $fx . 
+    7z a -mem=AES256 -mx4 -tzip "$ans" -p
+    rsync -arhz --info=progress2 -- "$ans".zip "$origd/"
+    popd
+    rm -rf "$tempd"
+    lf -remote 'send :reload;unselect'
+    lf -remote "send $id echo ' 󱝣 created encrypted zipfile \"$ans.zip\"'"
+}}
+
+
+cmd "extract archive" &{{
+    for file in $fx; do
+        case $file in
+            *.zip) 7z x "$file" -o"${file%.zip}" -y ;;
+            *.7z) 7z x "$file" -o"${file%.7z}" -y ;;
+            *.rar) 7z x "$file" -o"${file%.rar}" -y ;;
+            *.tar.zst) tar --zstd -xf "$file" --one-top-level ;;
+            *.tar.gz) tar -xzf "$file" --one-top-level ;;
+            *.tar.xz) tar -xf "$file" --one-top-level ;;
+            *.tar.bz2) tar -xjf "$file" --one-top-level ;;
+            *.gz) gunzip -c "$file" ;;
+            *.tar) tar -xf "$file" --one-top-level ;;
+            *) lf -remote "send $id echo '   unsupported format'" ;;
+        esac
+    done
+    
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully extracted archive(s)'"
+}}
+
+
+
+# ---------- CONVERT FILES ----------
+
+cmd "convert to mp4" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to mp4'"
+        ffmpeg -i $file -c:v libx264 -pix_fmt yuv420p -b:v 12M -b:a 192k -c:a aac "${file%.*}.mp4"
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to mp4'"
+}}
+
+cmd "convert to mkv" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to mkv'"
+        ffmpeg -i $file -codec copy "${file%.*}.mkv"
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to mkv'"
+}}
+
+cmd "convert to png" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to png'"
+        ffmpeg -i $fx "${f%.*}.png"
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to png'"
+}}
+
+cmd "convert to jpg" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to jpg'"
+        ffmpeg -i $fx "${f%.*}.jpg"
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to jpg'"
+}}
+
+cmd "convert to gif" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to gif'"
+        ffmpeg -i $file -filter_complex "fps=15,scale=480:-1:flags=lanczos,split [o1] [o2];[o1] palettegen [p]; [o2] fifo [o3];[o3] [p] paletteuse" "${file%.*}.gif";
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to gif'"
+}}
+
+cmd "convert to mp3" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  converting file $(basename $file) to mp3'"
+        ffmpeg -i $file -vn -ar 44100 -ac 2 -b:a 320k "${file%.*}.mp3"	
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully converted to mp3'"
+}}
+
+
+
+# ---------- DEFAULT PLAYER ----------
+
+cmd "open in default player" ${{
+    $DEFAULT_PLAYER "$f"
+}}
+
+
+
+# ---------- CHMOD ----------
+
+cmd chmodx &{{
+	chmod u+x $fx
+	lf -remote "send $id reload"
+}}
+
+
+
+# ---------- CREATE BACKUP FILE ----------
+
+cmd "createbackup" &{{
+    for file in $fx; do
+        lf -remote "send $id echo ' 󱥸  creating backup for $(basename $file)'"
+        cp $file $file.bak
+    done
+
+    lf -remote "send $id :reload;unselect"
+    lf -remote "send $id echo '   successfully created backup file(s)'"
+}}
+
+
+
+# ---------- RELOAD CONFIG ----------
+
+cmd "reload config file" ${{
+    lf -remote "send $id source ~/.config/lf/lfrc"
+}}
+
+
+
+# ---------- ZOXIDE ----------
+
+cmd z %{{
+    result="$(zoxide query --exclude "$PWD" "$@" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    lf -remote "send $id cd \"$result\""
+}}
+
+cmd zi ${{
+    result="$(zoxide query -i | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    lf -remote "send $id cd \"$result\""
+}}
+
+cmd on-cd &{{
+    zoxide add "$PWD"
+}}
+
+
+

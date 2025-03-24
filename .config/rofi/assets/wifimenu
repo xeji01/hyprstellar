@@ -1,0 +1,766 @@
+#!/usr/bin/env bash
+
+# Copyright © 2024 Jesús Arenas
+
+# This program is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.
+# If not, see <https://www.gnu.org/licenses/>.
+
+print_usage() {
+	echo -n "\
+Usage: $program_name [OPTIONS...]
+
+Displays a menu with a launcher to select a Wi-Fi network.
+
+Options:
+  -s, --submenu               Show Wi-Fi options in a submenu.
+  -S, --no-submenu            Do not show Wi-Fi options in a submenu (default).
+  -w, --wireguard             Show wireguard connections option.
+  -W, --no-wireguard          Do not show wireguard connections option
+                              (default).
+  -j, --emoji                 Use emojis instead of Nerd Fonts font for icons.
+  -J, --no-emoji              Use Nerd Fonts font instead of emojis for icons
+                              (default).
+  --no-notify                 Do not send notifications.
+
+  -i INTERFACE
+  --interface INTERFACE       Start using Wi-Fi interface INTERFACE.
+
+  --wofi                      Use wofi launcher (default).
+  --rofi                      Use rofi launcher.
+  --wmenu                     Use wmenu launcher.
+  --dmenu                     Use dmenu launcher.
+  --bemenu                    Use bemenu launcher.
+  --custom LAUNCHER 1 2 3     Use launcher LAUNCHER with options for
+                              case-insensitive (1), case-sensitive (2)
+                              and password-prompt (3) input.
+
+  -h, --help                  Print this help and exit.
+  -v, --version               Print version and other info and exit.
+
+Nerd Fonts icons are used. A font can be downloaded at:
+https://www.nerdfonts.com/
+
+Dependencies: 
+  - NetworkManager.
+  - A menu launcher.
+
+About dmenu: 
+  Hide password button does not work, since dmenu does not support this.
+
+Exit status: 
+  Returns 1 if a wrong option is given.
+  Returns 2 if no Wi-Fi interface is detected with nmcli.
+            if an unknown interface is given with -i.
+  Returns 3 if the launcher selected is not installed.
+  Returns 4 if custom launcher options are not completely defined.
+  Returns 0 otherwise.
+
+This program is licensed under GPL-3.0-or-later.
+"
+	exit 0
+}
+
+print_about() {
+	echo -n "\
+wifimenu 2.7.1
+Copyright © 2024 Jesús Arenas
+Official repository: https://github.com/podobu/wifimenu
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+"
+	exit 0
+}
+
+display_menu() {
+	declare form=$1
+	declare prompt="$2"
+	
+	case "$launcher" in
+		'wofi')
+			case $form in
+				1) wofi --dmenu --insensitive --prompt "$prompt" ;;
+				2) wofi --dmenu --prompt "$prompt" ;;
+				3) wofi --dmenu --password --prompt "$prompt" ;;
+			esac
+			;;
+		'rofi')
+			case $form in
+				1) rofi -dmenu -i -p "$prompt" ;;
+				2) rofi -dmenu -p "$prompt" ;;
+				3) rofi -dmenu -password -p "$prompt" ;;
+			esac
+			;;
+		'wmenu')
+			case $form in
+				1) wmenu -l 10 -i -p "$prompt" ;;
+				2) wmenu -l 10 -p "$prompt" ;;
+				3) wmenu -l 10 -P -p "$prompt" ;;
+			esac
+			;;
+		'dmenu')
+			case $form in
+				1) dmenu -l 10 -i -p "$prompt" ;;
+				2) dmenu -l 10 -p "$prompt" ;;
+				3) dmenu -l 10 -p "$prompt" ;; # Cannot hide the password
+			esac
+			;;
+		'bemenu')
+			case $form in
+				1) bemenu --list 10 --ignorecase --prompt "$prompt" ;;
+				2) bemenu --list 10 --prompt "$prompt" ;;
+				3) bemenu --list 10 --password "indicator" --prompt "$prompt" ;;
+			esac
+			;;
+		'custom')
+			case $form in
+				1) "${custom_opts[launcher]}" ${custom_opts[insensitive]} "$prompt" ;;
+				2) "${custom_opts[launcher]}" ${custom_opts[sensitive]} "$prompt" ;;
+				3) "${custom_opts[launcher]}" ${custom_opts[password]} "$prompt" ;;
+			esac
+			;;
+		*)
+			echo "$program_name: Unknown launcher. See variable 'launcher'." >&2
+			exit 1
+			;;
+	esac
+}
+
+send_notification() {
+	[ -z "$notifications" ] && return
+	declare specific icon
+	declare summary="$3"
+	declare body="$4"
+	# Notification category format specified by freedesktop.org
+	case "$1" in
+		1) specific='connected' ;;
+		2) specific='disconnected' ;;
+		3) specific='error' ;;
+	esac
+	# Icon naming format specified by freedesktop.org
+	case "$2" in
+		1) icon='network-wireless' ;;
+		2) icon='network-offline' ;;
+		3) icon='network-transmit-receive' ;;
+		4) icon='network-error' ;;
+	esac
+	notify-send --app-name "$program_name" --category "network.$specific" --icon ~/.config/hypr/scripts/icons/network.png --transient "$summary" "$body" 
+}
+
+ask_password() {
+	declare middle_option=${1:-}
+	declare wifi_password="$icon_eye"
+	until [[ -z "$wifi_password" || "$wifi_password" == !(${icon_eye_closed}*|${icon_eye}*) ]]; do
+		if [[ "$wifi_password" =~ ^$icon_eye_closed ]]; then
+			wifi_password=$(echo -e "$icon_eye${middle_option}\n$icon_close" | display_menu 3 "$tr_ask_password_prompt")
+		else
+			wifi_password=$(echo -e "$icon_eye_closed${middle_option}\n$icon_close" | display_menu 2 "$tr_ask_password_prompt")
+		fi
+	done
+	echo "$wifi_password"
+}
+
+select_interface() {
+	chosen=$( (for (( i = 0; i < ${#interfaces[@]}; i++ )); do echo "$icon_interface  ${interfaces[$i]}" ; done; echo "$icon_close") | display_menu 1 "$tr_select_interface_prompt")
+
+	if [ -z "$chosen" ]; then
+		exit 0
+	elif [[ "$chosen" =~ ^$icon_close ]]; then
+		return
+	else
+		interface_to_use="${chosen:3}"
+	fi
+}
+
+menu_addresses() {
+	declare connection="$1"
+	declare ipv="$2"
+	declare -a addresses_list
+	declare -i addresses_list_length
+	declare sure
+	while true; do
+		addresses_list=($(nmcli --get-values ipv${ipv}.addresses connection show $connection | sed 's/,//g'))
+		chosen="$( (for i in "${addresses_list[@]}"; do echo "$i"; done; echo "$icon_close") | display_menu 1 "$tr_menu_addresses_prompt")"
+
+		if [ -z "$chosen" ]; then
+			exit 0
+		elif [[ "$chosen" =~ ^$icon_close ]]; then
+			return
+		fi
+
+		addresses_list_length=${#addresses_list[@]}
+
+		for ((i=0; i < $addresses_list_length; i++)) do
+			if [ "$chosen" = "${addresses_list[$i]}" ]; then
+				sure=$(echo -e "$icon_check\n$icon_close" | display_menu 1 "$tr_menu_addresses_sure_prompt_1 ${chosen}$tr_menu_addresses_sure_prompt_2")
+				if [ -z "$sure" ]; then
+					exit 0
+				elif [[ "$sure" =~ ^$icon_check ]]; then
+					if [ $addresses_list_length -eq 1 ]; then
+						nmcli connection modify uuid "$connection" ipv${ipv}.gateway ''
+						nmcli connection modify uuid "$connection" ipv${ipv}.method auto
+					fi
+					nmcli connection modify uuid "$connection" -ipv${ipv}.addresses $chosen
+					[ $addresses_list_length -eq 1 ] && break 2
+				fi
+				continue 2
+			fi
+		done
+
+		nmcli connection modify uuid "$connection" +ipv${ipv}.addresses $chosen
+
+	done
+}
+
+menu_ip_config() {
+	declare chosen_connection="$1"
+	declare connection="$2"
+	declare ipv="$3"
+	declare autoip_state autodns_state message new_addresses new_gateway
+	while true; do
+		autoip_state="$([ "$(nmcli --get-values ipv${ipv}.method connection show "$connection")" = "auto" ] && echo "$icon_on" || echo "$icon_off")"
+
+		if [ "$autoip_state" = "$icon_on" ]; then
+			autodns_state="$([ "$(nmcli --get-values ipv${ipv}.ignore-auto-dns connection show "$connection")" = "no" ] && echo "$icon_on" || echo "$icon_off")"
+			message="$autodns_message  $autodns_state"
+		else
+			message="$address_message\n$gateway_message $(nmcli --get-values ipv${ipv}.gateway connection show "$connection")"
+		fi
+
+		chosen="$(echo -e "$autoip_message  $autoip_state\n$message\n$icon_close" | display_menu 1 "$chosen_connection")"
+
+		case "$chosen" in
+			'') exit 0 ;;
+			"$icon_close"*) return ;;
+			"$icon_net_1"*)
+				if [ "$autoip_state" = "$icon_on" ]; then
+					if [ -z "$(nmcli --get-values ipv4.addresses connection show "$connection")" ]; then
+						new_addresses="$(echo "$icon_close" | display_menu 1 "$tr_menu_ip_config_addresses_prompt")"
+						if [ -z "$new_addresses" ]; then
+							exit 0
+						elif [[ "$new_addresses" =~ ^$icon_close ]]; then
+							continue
+						fi
+						nmcli connection modify uuid "$connection" ipv${ipv}.addresses "$new_addresses" || continue
+					fi
+					nmcli connection modify uuid "$connection" ipv${ipv}.method manual
+				else
+					nmcli connection modify uuid "$connection" ipv${ipv}.gateway ''
+					nmcli connection modify uuid "$connection" ipv${ipv}.method auto
+				fi
+				;;
+			"$icon_net_4"*) [ "$autodns_state" = "$icon_on" ] && nmcli connection modify uuid "$connection" ipv${ipv}.ignore-auto-dns yes || nmcli connection modify uuid "$connection" ipv${ipv}.ignore-auto-dns no ;;
+			"$icon_net_3"*) menu_addresses "$connection" "$ipv" ;;
+			"$icon_net_2"*)
+				new_gateway="$(echo "$icon_close" | display_menu 1 "$tr_menu_ip_config_gateway_prompt")"
+				if [ -z "$new_gateway" ]; then
+					exit 0
+				elif [[ "$new_gateway" =~ ^$icon_close ]]; then
+					continue
+				fi
+				nmcli connection modify uuid "$connection" ipv${ipv}.gateway "$new_gateway"
+				;;
+		esac
+	done
+}
+
+menu_dns() {
+	declare connection="$1"
+	declare ipv="$2"
+	declare -a dns_list
+	declare sure
+	while true; do
+		dns_list=($(nmcli --get-values ipv${ipv}.dns connection show $connection | sed 's/,/ /g'))
+		chosen="$( (for i in "${dns_list[@]}"; do echo "$i"; done; echo "$icon_close") | display_menu 1 "$tr_menu_dns_prompt")"
+
+		if [ -z "$chosen" ]; then
+			exit 0
+		elif [[ "$chosen" =~ ^$icon_close ]]; then
+			return
+		fi
+
+		for ((i=0; i < ${#dns_list[@]}; i++)) do
+			if [ "$chosen" = "${dns_list[$i]}" ]; then
+				sure=$(echo -e "$icon_check\n$icon_close" | display_menu 1 "$tr_menu_dns_sure_prompt_1 ${chosen}$tr_menu_dns_sure_prompt_2")
+				if [ -z "$sure" ]; then
+					exit 0
+				elif [[ "$sure" =~ ^$icon_check ]]; then
+					nmcli connection modify uuid "$connection" -ipv${ipv}.dns $chosen
+				fi
+				continue 2
+			fi
+		done
+
+		nmcli connection modify uuid "$connection" +ipv${ipv}.dns $chosen
+
+	done
+}
+
+forget_connection() {
+	declare chosen_connection="$1"
+	declare connection="$2"
+	declare sure="$(echo -e "$icon_check\n$icon_close" | display_menu 1 "$tr_forget_connection_sure_prompt_1 ${chosen_connection}$tr_forget_connection_sure_prompt_2")"
+
+	if [ -z "$sure" ]; then
+		exit 0
+	elif [[ "$sure" =~ ^$icon_check ]]; then
+		nmcli connection delete uuid "$connection" && return 0
+	fi
+
+	return 1
+}
+
+rename_connection() {
+	declare connection="$1"
+	new_name="$(echo "$icon_close" | display_menu 1 "$tr_rename_connection_prompt")"
+
+	if [ -z "$new_name" ]; then
+		exit 0
+	elif [[ "$new_name" =~ ^$icon_close ]]; then
+		return 1
+	fi
+
+	nmcli connection modify uuid "$connection" connection.id "$new_name"
+}
+
+menu_connection() {
+	declare chosen_connection="$1"
+	declare connection="$2"
+	declare autoconnect_state
+	while true; do
+		autoconnect_state="$([ "$(nmcli --get-values connection.autoconnect connection show "$connection")" = "yes" ] && echo "$icon_on" || echo "$icon_off")"
+		chosen="$(echo -e "$autoconnect_message  $autoconnect_state\n$ipv4_config_message\n$dns4_message\n$ipv6_config_message\n$dns6_message\n$forget_message\n$icon_close" | display_menu 1 "$chosen_connection")"
+
+		case "$chosen" in
+			'') exit 0 ;;
+			"$icon_close"*) return ;;
+			"$icon_automatic"*) [ "$autoconnect_state" = "$icon_on" ] && nmcli connection modify uuid "$connection" autoconnect no || nmcli connection modify uuid "$connection" autoconnect yes ;;
+			"$icon_4_1"*) menu_ip_config "$@" "4" ;;
+			"$icon_4_2"*) menu_dns "$connection" "4" ;;
+			"$icon_6_1"*) menu_ip_config "$@" "6" ;;
+			"$icon_6_2"*) menu_dns "$connection" "6" ;;
+			"$icon_trash"*) forget_connection "$@" && return ;;
+		esac
+	done
+}
+
+menu_wireguard_connection(){
+	declare chosen_connection="$1"
+	declare connection="$2"
+	declare state autoconnect_state new_name
+	while true; do
+		state="$([ "$(nmcli --get-values GENERAL.STATE connection show "$connection")" = "activated" ] && echo "$icon_on" || echo "$icon_off")"
+		autoconnect_state="$([ "$(nmcli --get-values connection.autoconnect connection show "$connection")" = "yes" ] && echo "$icon_on" || echo "$icon_off")"
+		chosen="$(echo -e "$wireguard_enable_message  $state\n$autoconnect_message  $autoconnect_state\n$rename_connection_message\n$forget_message\n$icon_close" | display_menu 1 "$chosen_connection")"
+
+		case "$chosen" in
+			'') exit 0 ;;
+			"$icon_close"*) return ;;
+			"$icon_plug"*) [ "$state" = "$icon_on" ] && {
+					nmcli connection down uuid "$connection" && 
+						send_notification 1 2 "$tr_notice_disconnected_summary" "$tr_notice_disconnected_vpn_body" ||
+						send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_vpn_disconnection_body"
+				} || {
+					nmcli connection up uuid "$connection" &&
+						send_notification 1 3 "$tr_notice_connected_summary" "$tr_notice_connected_vpn_body" ||
+						send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_vpn_connection_body"
+				}
+				;;
+			"$icon_automatic"*) [ "$autoconnect_state" = "$icon_on" ] && nmcli connection modify uuid "$connection" autoconnect no || nmcli connection modify uuid "$connection" autoconnect yes ;;
+			"$icon_pen"*) rename_connection "$connection" && chosen_connection="$new_name" ;;
+			"$icon_trash"*) forget_connection "$@" && return ;;
+		esac
+	done
+}
+
+menu_known_connections() {
+	case "$1" in
+		"wifi" | "802-11-wireless")
+			connection_type="802-11-wireless"
+			icon="$icon_wireless"
+			menu_type="menu_connection"
+			;;
+		"wireguard")
+			connection_type="$1"
+			icon="$icon_net_5"
+			menu_type="menu_wireguard_connection"
+			;;
+	esac
+	declare -a profiles_list
+	while true; do
+
+		mapfile -t profiles_list < <(nmcli --colors no --get-values TYPE,UUID,NAME connection show | awk -F ':' -v ct="$connection_type" -v icon="$icon" '$1 == ct {print $2 "\\0" icon "  " $3}')
+		chosen=$( (for i in "${profiles_list[@]}"; do echo -e "$i" | cut --delimiter $'\0' --fields 2; done; echo "$icon_close") | display_menu 1 "$tr_known_connections_message")
+
+		if [ -z "$chosen" ]; then
+			exit 0
+		elif [[ "$chosen" =~ ^$icon_close ]]; then
+			return
+		fi
+
+		for i in "${profiles_list[@]}"; do
+			if [ "$chosen" = "$(echo -e "$i" | cut --delimiter $'\0' --fields 2)" ]; then
+				eval "$menu_type \"$(sed 's/"/\\"/g' <<< "${chosen:3}")\" \"$(echo -e "$i" | cut --delimiter $'\0' --fields 1)\""
+				break
+			fi
+		done
+		
+	done
+}
+
+connect_hidden() {
+	declare wifi_name="$(echo "$icon_close"| display_menu 2 "$tr_connect_hidden_prompt")"
+
+	if [ -z "$wifi_name" ]; then
+		exit 0
+	elif [[ "$wifi_name" =~ ^$icon_close ]]; then
+		return
+	fi
+
+	declare wifi_password="$(ask_password "\n$icon_unlock")"
+
+	if [ -z "$wifi_password" ]; then
+		exit 0
+	elif [[ "$wifi_password" =~ ^$icon_unlock ]]; then
+		wifi_password=""
+	elif [[ "$wifi_password" =~ ^$icon_close ]]; then
+		return
+	fi
+
+	nmcli --wait 15 device wifi connect "$wifi_name" hidden yes password "$wifi_password" &&
+		send_notification 1 1 "$tr_notice_connected_summary" "$tr_notice_connected_wifi_body" ||
+		send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_wifi_connection_body"
+}
+
+connect_wifi() {
+	declare wifi_security="${1:0:${#icon_wifi_1}}"
+	declare wifi_ssid="${1#*  }"
+	declare -a connections_matching
+
+	mapfile -t connections_matching < <(nmcli --colors no --get-values NAME connection show | grep --color=never --word-regexp --fixed-strings "$wifi_ssid" )
+
+	for (( i = 0; i < ${#connections_matching[@]}; i++ )); do
+		if [ $(nmcli --get-values connection.interface-name connection show "${connections_matching[$i]}") = "$interface_to_use" ]; then
+			if [[ "$wifi_security" =~ ^$icon_check ]]; then
+				nmcli connection down id "${connections_matching[$i]}" &&
+					send_notification 2 1 "$tr_notice_disconnected_summary" "$tr_notice_disconnected_wifi_body" ||
+					send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_wifi_disconnection_body"
+			else
+				nmcli --wait 15 connection up id "${connections_matching[$i]}" ifname "$interface_to_use" &&
+					send_notification 1 1 "$tr_notice_connected_summary" "$tr_notice_connected_wifi_body" ||
+					send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_wifi_connection_body"
+			fi
+			exit 0
+		fi
+	done
+
+	if [[ "$wifi_security" =~ ^(${icon_wifi_1}|${icon_wifi_2}|${icon_wifi_3}) ]]; then
+		declare wifi_password=$(ask_password)
+		if [ -z "$wifi_password" ]; then
+			exit 0
+		elif [[ "$wifi_password" =~ ^$icon_close ]]; then
+			return
+		fi
+	fi 
+	nmcli --wait 15 device wifi connect "$wifi_ssid" ifname "$interface_to_use" password "$wifi_password" &&
+		send_notification 1 1 "$tr_notice_connected_summary" "$tr_notice_connected_wifi_body" ||
+		send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_wifi_connection_body"
+
+	exit 0
+}
+
+menu_submenu() {
+	while true; do
+		chosen="$(echo -e "$disable_message\n${interfaces[1]:+$interface_message ${interface_to_use}\n}$known_connections_message\n${wireguard:+${wireguard_message}\n}$hidden_message\n$icon_close" | display_menu 1 "$tr_submenu_message")"
+		case "$chosen" in
+			'') exit 0 ;;
+			"$icon_close"*) return ;;
+			"$icon_wifi_disable"*) nmcli radio wifi off ; send_notification 1 1 "$tr_notice_disable_wifi_summary" "$tr_notice_disable_wifi_body" ; exit 0 ;;
+			"$icon_interface"*) select_interface ;;
+			"$icon_saved"*) menu_known_connections "wifi" ;;
+			"$icon_dragon"*) menu_known_connections "wireguard" ;;
+			"$icon_eye"*) connect_hidden ;;
+		esac
+	done
+}
+
+menu_main() {
+	declare connection_state wifi_list options
+	while true; do
+
+		connection_state=$(nmcli --colors no --get-values WIFI general)
+
+		if [ "$connection_state" = "disabled" ]; then
+			options="$enable_message\n$known_connections_message"
+		elif [ "$connection_state" = "enabled" ]; then
+
+			if [ -n "$submenu" ]; then
+				options="$submenu_message"
+			else
+				options="$disable_message\n${interfaces[1]:+$interface_message ${interface_to_use}\n}$known_connections_message\n${wireguard:+${wireguard_message}\n}$hidden_message"
+			fi
+
+			echo "$tr_scanning_networks"
+			wifi_list=$(nmcli --colors no --get-values SECURITY,SIGNAL,SSID,IN-USE device wifi list --rescan auto ifname $interface_to_use | awk -F ':' \
+				-v wifi_1="$icon_wifi_1" \
+				-v wifi_2="$icon_wifi_2" \
+				-v wifi_3="$icon_wifi_3" \
+				-v wifi_4="$icon_wifi_4" \
+				-v wifi_5="$icon_wifi_5" \
+				-v wifi_6="$icon_wifi_6" \
+				-v check="$icon_check" \
+			'
+			BEGIN {
+				x = 1
+			}
+			$3 {
+				if ($1 ~ /^WPA/)
+					if ($2 > 80)
+						sub($1, wifi_1)
+					else if ($2 > 60)
+						sub($1, wifi_2)
+					else
+						sub($1, wifi_3)
+				else if ($1 == "")
+					if ($2 > 80)
+						sub($1, wifi_4)
+					else if ($2 > 60)
+						sub($1, wifi_5)
+					else
+						sub($1, wifi_6)
+				if ($4 == "*")
+					networks[0] = check "  " $3
+				else
+					networks[x++] = $1 "  " $3
+			}
+			END {
+				if (0 in networks)
+					print networks[0]
+				for (i = 1; i < x; i++)
+					print networks[i]
+			}
+			')
+			echo "$tr_scanning_networks_complete"
+
+		fi
+
+		chosen="$(echo -e "${options}${wifi_list:+\n}$wifi_list" | display_menu 1 "$tr_main_menu_prompt")"
+
+		case "$chosen" in
+			'') exit 0 ;;
+			"$icon_config"*) menu_submenu ;;
+			"$icon_wifi_enable"*) nmcli radio wifi on ; send_notification 1 1 "$tr_notice_enable_wifi_summary" "$tr_notice_enable_wifi_body" ; exit 0 ;;
+			"$icon_wifi_disable"*) nmcli radio wifi off ; send_notification 1 1 "$tr_notice_disable_wifi_summary" "$tr_notice_disable_wifi_body" ; exit 0 ;;
+			"$icon_interface"*) select_interface ;;
+			"$icon_saved"*) menu_known_connections "wifi" ;;
+			"$icon_dragon"*) menu_known_connections "wireguard" ;;
+			"$icon_eye"*) connect_hidden ;;
+			*) connect_wifi "$chosen" ;;
+		esac
+
+	done
+}
+
+############################################################ MAIN ############################################################
+
+# tr_* variables are for translation or customization (for editing in config file, not here!).
+tr_scanning_networks='Scanning networks'
+tr_scanning_networks_complete='Scanning completed'
+tr_submenu_message='More options'
+tr_disable_message='Disable Wi-Fi'
+tr_enable_message='Enable Wi-Fi'
+tr_interface_message='Interface:'
+tr_known_connections_message='Known connections'
+tr_autoconnect_message='Autoconnect'
+tr_ipv4_config_message='DHCP configuration'
+tr_dns4_message='DNS IPv4'
+tr_ipv6_config_message='IPv6 configuration'
+tr_dns6_message='DNS IPv6'
+tr_autoip_message='Automatic IP configuration'
+tr_autodns_message='Automatic DNS'
+tr_address_message='Addresses'
+tr_gateway_message='Gateway:'
+tr_forget_message='Forget connection'
+tr_wireguard_message='Wireguard connections'
+tr_wireguard_enable_message='Enable VPN'
+tr_rename_connection_message='Rename connection'
+tr_hidden_message='Connect to a hidden network'
+
+tr_main_menu_prompt='Wi-Fi SSID:'
+tr_select_interface_prompt='Interface to use:'
+tr_ask_password_prompt='Password:'
+tr_menu_dns_prompt='New DNS:'
+tr_menu_dns_sure_prompt_1='Remove DNS'
+tr_menu_dns_sure_prompt_2='?'
+tr_menu_ip_config_addresses_prompt='address1/CIDR_mask,address2/CIDR_mask,...'
+tr_menu_ip_config_gateway_prompt='New gateway:'
+tr_menu_addresses_prompt='New address:'
+tr_menu_addresses_sure_prompt_1='Remove address'
+tr_menu_addresses_sure_prompt_2='?'
+tr_forget_connection_prompt='Connection to forget:'
+tr_forget_connection_sure_prompt_1='Forget'
+tr_forget_connection_sure_prompt_2='?'
+tr_rename_connection_prompt='New name:'
+tr_connect_hidden_prompt='Network name:'
+
+tr_notice_connected_summary='Connected'
+tr_notice_disconnected_summary='Disconnected'
+tr_notice_error_summary='Connection error'
+tr_notice_enable_wifi_summary='Wi-Fi enabled'
+tr_notice_disable_wifi_summary='Wi-Fi disabled'
+tr_notice_connected_wifi_body='Successfully connected to Wi-Fi network'
+tr_notice_disconnected_wifi_body='Disconnected from Wi-Fi network'
+tr_notice_error_wifi_connection_body='An error occurred while trying to connect to the Wi-Fi network'
+tr_notice_error_wifi_disconnection_body='An error occurred while trying to disconnect to the Wi-Fi network'
+tr_notice_connected_vpn_body='Successful connection to VPN'
+tr_notice_disconnected_vpn_body='Successful disconnection from VPN'
+tr_notice_error_vpn_connection_body='An error occurred while trying to connect to the VPN'
+tr_notice_error_vpn_disconnection_body='An error occurred while trying to disconnect to the VPN'
+tr_notice_enable_wifi_body='Wi-Fi was successfully enabled'
+tr_notice_disable_wifi_body='Wi-Fi was successfully disabled'
+
+# Detecting Wi-Fi interfaces and add them to the array
+mapfile -t interfaces < <(nmcli --colors no --get-values TYPE,DEVICE device status | awk -F ':' '$1 == "wifi" {print $2}')
+if [ -z "${interfaces[0]}" ]; then
+	echo "$program_name: No Wi-Fi interfaces detected." >&2
+	exit 2
+fi
+
+# Default launcher (for editing in config file)
+launcher='wofi'
+# Custom launcher options
+declare -A custom_opts
+# Default icon display (for editing in config file)
+emoji=
+# Default menu display. Set variable to anything for submenu options (for editing in config file)
+submenu=
+# Default interface (edit in config file on your risk, if you know your hardware, or use --interface option instead)
+interface_to_use="${interfaces[0]}"
+# Default wireguard menus visibility. Set variable to anything for wireguard support (for editing in config file)
+wireguard=
+# Default is to check if notify-send is installed and, if it is, enable notifications
+notifications=$(command -v notify-send &> /dev/null && echo 1)
+
+program_name="$(basename $0)"
+
+{ [ -n "$XDG_CONFIG_HOME" ] && [ -f "${XDG_CONFIG_HOME}/${program_name}/config" ] && . "${XDG_CONFIG_HOME}/${program_name}/config"; } ||
+	{ [ -f "${HOME}/.config/${program_name}/config" ] && . "${HOME}/.config/${program_name}/config"; } ||
+	{ [ -f "${HOME}/.${program_name}" ] && . "${HOME}/.${program_name}"; }
+
+# Options
+while [ -n "$1" ]; do
+	case "$1" in
+		'-h' | '--help') print_usage ;;
+		'-v' | '--version') print_about ;;
+		'-s' | '--submenu') submenu=1 ;;
+		'-S' | '--no-submenu') submenu= ;;
+		'-i' | '--interface')
+			if [ ! $(nmcli --colors no --get-values TYPE,DEVICE device status | awk -F ':' '$1 == "wifi" {print $2}' | grep --word-regexp "$2") ]; then
+				echo "$program_name: Unknown interface given: $2" >&2
+				exit 2
+			fi
+			interface_to_use="$2"
+			shift
+			;;
+		'-w' | '--wireguard') wireguard=1 ;;
+		'-W' | '--no-wireguard') wireguard= ;;
+		'-j' | '--emoji') emoji=1 ;;
+		'-J' | '--no-emoji') emoji= ;;
+		'--no-notify') notifications= ;;
+		'--wofi') launcher='wofi' ;;
+		'--rofi') launcher='rofi' ;;
+		'--wmenu') launcher='wmenu' ;;
+		'--dmenu') launcher='dmenu' ;;
+		'--bemenu') launcher='bemenu' ;;
+		'--custom')
+			launcher='custom'
+			custom_opts[launcher]="$2"
+			custom_opts[insensitive]="$3"
+			custom_opts[sensitive]="$4"
+			custom_opts[password]="$5"
+			shift 4
+			;;
+		*) echo "$program_name: Wrong option given. See usage with -h or --help." >&2 ; exit 1 ;;
+	esac
+	shift
+done
+
+if [ "$launcher" = 'custom' ]; then
+	[ -n "${custom_opts[launcher]}" ] &&
+	[ -n "${custom_opts[insensitive]}" ] &&
+	[ -n "${custom_opts[sensitive]}" ] &&
+	[ -n "${custom_opts[password]}" ] || {
+	echo "$program_name: Custom launcher options not defined. See usage with -h or --help." >&2
+	exit 4
+}
+fi
+
+command -v ${custom_opts[launcher]:-$launcher} &> /dev/null || {
+	echo "$program_name: The launcher selected is not installed: $launcher. See usage with -h or --help." >&2
+	exit 3
+}
+
+# Icon variables
+icon_dragon="${icon_dragon:-$([ -z "$emoji" ] && echo   || echo 🐉)}"
+icon_config="${icon_config:-$([ -z "$emoji" ] && echo  || echo ⚙️)}"
+icon_close="${icon_close:-$([ -z "$emoji" ] && echo  || echo ❌)}"
+icon_check="${icon_check:-$([ -z "$emoji" ] && echo  || echo ✅)}"
+icon_eye="${icon_eye:-$([ -z "$emoji" ] && echo 󰛐 || echo 👁️)}"
+icon_eye_closed="${icon_eye_closed:-$([ -z "$emoji" ] && echo 󰛑 || echo 🙈)}"
+icon_saved="${icon_saved:-$([ -z "$emoji" ] && echo  || echo 💾)}"
+icon_automatic="${icon_automatic:-$([ -z "$emoji" ] && echo 󱣲 || echo 🤖)}"
+icon_wifi_enable="${icon_wifi_enable:-$([ -z "$emoji" ] && echo 󰖩 || echo 🌇)}"
+icon_wifi_disable="${icon_wifi_disable:-$([ -z "$emoji" ] && echo 󰖪 || echo 🌃)}"
+icon_wifi_1="${icon_wifi_1:-$([ -z "$emoji" ] && echo 󰤪 || echo 🚀🔒)}"
+icon_wifi_2="${icon_wifi_2:-$([ -z "$emoji" ] && echo 󰤤 || echo 🚗🔒)}"
+icon_wifi_3="${icon_wifi_3:-$([ -z "$emoji" ] && echo 󰤡 || echo 🦽🔒)}"
+icon_wifi_4="${icon_wifi_4:-$([ -z "$emoji" ] && echo 󰤨 || echo 🚀)}"
+icon_wifi_5="${icon_wifi_5:-$([ -z "$emoji" ] && echo 󰤢 || echo 🚗)}"
+icon_wifi_6="${icon_wifi_6:-$([ -z "$emoji" ] && echo 󰤟 || echo 🦽)}"
+icon_interface="${icon_interface:-$([ -z "$emoji" ] && echo 󰾲 || echo 🛰️)}"
+icon_4_1="${icon_4_1:-$([ -z "$emoji" ] && echo 󰎭 || echo 🔧4️⃣)}"
+icon_4_2="${icon_4_2:-$([ -z "$emoji" ] && echo 󰲦 || echo 🔍4️⃣)}"
+icon_6_1="${icon_6_1:-$([ -z "$emoji" ] && echo 󰎳 || echo 🔧6️⃣)}"
+icon_6_2="${icon_6_2:-$([ -z "$emoji" ] && echo 󰲪 || echo 🔍6️⃣)}"
+icon_plug="${icon_plug:-$([ -z "$emoji" ] && echo 󱘖 || echo 🔌)}"
+icon_trash="${icon_trash:-$([ -z "$emoji" ] && echo  || echo 🗑️)}"
+icon_pen="${icon_pen:-$([ -z "$emoji" ] && echo 󰑕 || echo 📝)}"
+icon_wireless="${icon_wireless:-$([ -z "$emoji" ] && echo 󰑩 || echo 🛜)}"
+icon_net_1="${icon_net_1:-$([ -z "$emoji" ] && echo 󰩠 || echo 🤖)}"
+icon_net_2="${icon_net_2:-$([ -z "$emoji" ] && echo 󰳘 || echo 🛣️)}"
+icon_net_3="${icon_net_3:-$([ -z "$emoji" ] && echo 󰀑 || echo 🏠)}"
+icon_net_4="${icon_net_4:-$([ -z "$emoji" ] && echo 󰖟 || echo 🌐)}"
+icon_net_5="${icon_net_5:-$([ -z "$emoji" ] && echo 󰌘 || echo 💻)}"
+icon_unlock="${icon_unlock:-$([ -z "$emoji" ] && echo  || echo 🔓)}"
+icon_on="${icon_on:-$([ -z "$emoji" ] && echo  || echo 🟢)}"
+icon_off="${icon_off:-$([ -z "$emoji" ] && echo  || echo 🔴)}"
+
+# Messages with icons
+submenu_message="$icon_config  $tr_submenu_message"
+submenu_close_message="$icon_close  $tr_submenu_close_message"
+disable_message="$icon_wifi_disable  $tr_disable_message"
+enable_message="$icon_wifi_enable  $tr_enable_message"
+interface_message="$icon_interface  $tr_interface_message"
+known_connections_message="$icon_saved  $tr_known_connections_message"
+autoconnect_message="$icon_automatic  $tr_autoconnect_message"
+ipv4_config_message="$icon_4_1  $tr_ipv4_config_message"
+dns4_message="$icon_4_2  $tr_dns4_message"
+ipv6_config_message="$icon_6_1  $tr_ipv6_config_message"
+dns6_message="$icon_6_2  $tr_dns6_message"
+autoip_message="$icon_net_1  $tr_autoip_message"
+autodns_message="$icon_net_4  $tr_autodns_message"
+address_message="$icon_net_3  $tr_address_message"
+gateway_message="$icon_net_2  $tr_gateway_message"
+forget_message="$icon_trash  $tr_forget_message"
+wireguard_message="$icon_dragon  $tr_wireguard_message"
+wireguard_enable_message="$icon_plug  $tr_wireguard_enable_message"
+rename_connection_message="$icon_pen  $tr_rename_connection_message"
+hidden_message="$icon_eye  $tr_hidden_message"
+
+menu_main

@@ -1,0 +1,122 @@
+@import "../../.cache/wal/colors-waybar.css";
+
+@define-color main-color @color13;
+
+* {
+    border: none;
+    border-radius: 0px;
+    font-family: "Ndot55, DepartureMono Nerd Font";
+    font-weight: bold;
+    font-size: 15px;
+    min-height: 0;
+}
+
+window#waybar {
+    border-radius: 20px;
+    background: alpha(@background, 0.1);
+}
+
+tooltip {
+    background: alpha(@background, 0.3);
+    border-radius: 10px;
+    border: 2px solid alpha(lighter(@main-color), 0.3);
+}
+
+tooltip label {
+    color: @foreground;
+}
+
+#workspaces {
+    background: alpha(@background, 0.2);
+    border-radius: 20px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#workspaces button {
+    padding: 0px;
+    color: alpha(@foreground, 0.5);
+    background: transparent;
+    border-radius: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.4s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#workspaces button.active {
+    background: alpha(@background, 0.2);
+    color: lighter(@main-color);
+    border-radius: 20px;
+    transition: color 0.5s;
+    margin-left: 3px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-right: 3px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.8s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#workspaces button.focused {
+    color: @color5;
+    background: transparent;
+}
+
+#workspaces button.urgent {
+    color: @color5;
+    background: transparent;
+}
+
+#workspaces button:hover {
+    background: transparent;
+    color: @color5;
+}
+
+#window,
+#clock,
+#battery,
+#network,
+#memory,
+#bluetooth,
+#workspaces {
+    padding: 0px 14px 0px 14px;
+}
+
+#window {
+    margin-left: 60px;
+    margin-right: 60px;
+    background: alpha(@background, 0.3);
+    border-radius: 10px;
+    color: lighter(@main-color);
+}
+
+#clock {
+    color: lighter(@main-color);
+    background: transparent;
+}
+
+#network {
+    color: lighter(@main-color);
+    background: transparent;
+}
+
+#bluetooth {
+    color: lighter(@main-color);
+    background: transparent;
+} 
+
+#battery {
+    color: lighter(@main-color);
+    background: transparent;
+}
+
+#memory {
+    color: lighter(@main-color);
+    background: transparent;
+}
+
+#calendar {
+    font-family: "DepartureMono Nerd Font";
+}

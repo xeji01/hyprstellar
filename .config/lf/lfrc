@@ -1,0 +1,3 @@
+source ~/.config/lf/configs/commands
+source ~/.config/lf/configs/keymaps
+source ~/.config/lf/configs/options

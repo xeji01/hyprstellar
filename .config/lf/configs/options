@@ -1,0 +1,28 @@
+# --------------------- OPTIONS -------------------- #
+
+
+set ratios 1:2:3
+set icons true
+
+set previewer ~/.config/lf/previewer/previewer.sh
+set cleaner ~/.config/lf/previewer/clear_img.sh
+
+set sortby 'natural'
+set ignorecase true
+
+setlocal ~/Downloads sortby time
+setlocal ~/Downloads reverse
+setlocal ~/screenshot sortby time
+setlocal ~/screenshot reverse
+setlocal ~/.trash sortby ctime
+setlocal ~/.trash reverse
+
+set timefmt '  󰃰 Mon Jan.02.2006 15:04'
+set statfmt " \033[0m%S\033[0m| \033[36m%p\033[33m|    %u:%g| %t| -> %l"
+set errorfmt " \033[7;31;47m   "
+set rulerfmt "  %a|  %p|  \033[7;34m %s \033[0m|  \033[7;31m %m \033[0m|  \033[7;32m %c \033[0m|  \033[7;35m %f \033[37;34m| \033[33m 󰋊 %d \033[0m|  %i/%t "
+set dupfilefmt '%f.~%n~'
+
+set incfilter true
+set incsearch true
+

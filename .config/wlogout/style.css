@@ -1,0 +1,52 @@
+@import "../../.cache/wal/colors-waybar.css";
+
+* {
+    font-size: 17px;
+    font-family: "Ndot55";
+	border-radius: 10px;
+}
+
+window {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+button {
+    color: @foreground;
+    background-color: rgba(0,0,0,0.2);
+    outline-style: none;
+    border: none;
+    box-shadow: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30%;
+}
+
+button:hover,
+button:focus {
+    color: @foreground;
+    background-color: @color1;
+    background-size: 60%;
+}
+
+#logout {
+	background-image: image(url("icons/logout.png"));
+}
+
+#suspend {
+	background-image: image(url("icons/suspend.png"));
+}
+
+#shutdown {
+	background-image: image(url("icons/shutdown.png"));
+}
+
+#reboot {
+	background-image: image(url("icons/reboot.png"));
+}
+
+#logout,
+#suspend,
+#shutdown,
+#reboot {
+    margin: 3px;
+}

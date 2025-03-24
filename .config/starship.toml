@@ -1,0 +1,42 @@
+add_newline = true
+format = """
+$directory\
+$character"""
+right_format = """$all"""
+
+[directory]
+truncation_length = 2
+
+[hostname]
+ssh_symbol = " "
+format = "[$ssh_symbol $hostname]($style) "
+
+[git_branch]
+symbol = ""
+format =  "[$symbol $branch (:$remote_branch)]($style)"
+
+[git_status]
+style = "bold blue"
+format = "[$modified$deleted$untracked$ahead_behind]($style) "
+modified = " "
+deleted = " "
+untracked = " "
+ahead = " "
+behind = " "
+up_to_date = " "
+
+[cmd_duration]
+min_time = 20_000
+
+[python]
+style = "bold yellow"
+format = "via [${symbol} ${pyenv_prefix}(${version}) $virtualenv ]($style)"
+symbol = "󱔎"
+detect_extensions = []
+detect_files = ["__init__.py", "requirements.txt", "pyproject.toml", "setup.py"]
+
+[custom.docker]
+style = "bold grey"
+format = "[$symbol]($style) "
+symbol = " "
+files = ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"]
