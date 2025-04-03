@@ -1,0 +1,20 @@
+preview audio audio/* {{
+    audio(){
+        ffmpegthumbnailer -i "$f" -o "$cache_f" -s 256 -c "jpg" -q 8 2>/dev/null
+    }
+    meta="$(exiftool -S -Title -Artist -Album -Band -Track -Duration -FileSize -AudioBitrate -SampleRate -ChannelMode -FileName "$f" 2>&1)"
+    printf '%s\n' "$meta"
+    y=$((y + $(printf '%s\n\n' "$meta" | wc -l)))
+
+    convert_and_show_image audio
+}}
+
+preview video video/* {{
+    video() {
+        ffmpegthumbnailer -i "$f" -o "$cache_f" -c "jpeg" -s 0 -q 8 -t 50% 2>/dev/null
+    }
+
+    convert_and_show_image video
+}}
+
+
