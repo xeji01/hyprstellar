@@ -5,11 +5,10 @@ return {
         require("lualine").setup()
         local lualine = require('lualine')
 
-	lualine.setup {
-  	options = {
-    	theme = 'pywal16-nvim',
-	},
-     }
-
+        lualine.setup {
+            options = {
+                theme = 'rose-pine',
+            },
+        }
     end,
 }
