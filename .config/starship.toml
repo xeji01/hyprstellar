@@ -2,7 +2,7 @@ add_newline = true
 format = """
 $directory\
 $character"""
-right_format = """$all"""
+right_format = """$git_branch $git_status $git_state $cmd_duration"""
 
 [directory]
 truncation_length = 2
@@ -28,15 +28,3 @@ up_to_date = " "
 [cmd_duration]
 min_time = 20_000
 
-[python]
-style = "bold yellow"
-format = "via [${symbol} ${pyenv_prefix}(${version}) $virtualenv ]($style)"
-symbol = "󱔎"
-detect_extensions = []
-detect_files = ["__init__.py", "requirements.txt", "pyproject.toml", "setup.py"]
-
-[custom.docker]
-style = "bold grey"
-format = "[$symbol]($style) "
-symbol = " "
-files = ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"]

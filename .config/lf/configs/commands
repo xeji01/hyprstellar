@@ -6,12 +6,18 @@
 $mkdir -p ~/.trash
 
 cmd trash %{{
+
+    ICON_PATH="$HOME/.config/lf/assets/icons"
+
+    nof=$(ls $fx | wc -l)
+
     printf "   move $fx to trash bin? [y/n] " $fx
     read -r ans
     if [ "$ans" = "y" ]; then
         mv $fx ~/.trash
         echo "   moved to trash bin successfully"
         lf -remote "send $id :reload;unselect"
+        notify-send "lf file manager - status" "   $nof file(s) moved to trash bin" -i "$ICON_PATH/bin.png"
     else
         echo "   aborted"
     fi
@@ -22,6 +28,11 @@ cmd trash %{{
 # ---------- DELETE PERMANENTLY ----------
 
 cmd delete %{{
+
+    ICON_PATH="$HOME/.config/lf/assets/icons"
+
+    nof=$(ls $fx | wc -l)
+
     printf "   delete $fx permanently? [y/n] " $fx
     read -r ans
     if [ "$ans" = "y" ]; then
@@ -29,6 +40,7 @@ cmd delete %{{
         #| pv -l -s $(find $fx | wc -l) > /dev/null
         echo "   deleted successfully"
         lf -remote "send $id :reload;unselect"
+        notify-send "lf file manager - status" "   $nof file(s) deleted successfully" -i "$ICON_PATH/delete.png"
      else
         echo "   aborted"
      fi
@@ -53,7 +65,7 @@ cmd paste &{{
     mode="$1"
     shift
     
-    ICON_PATH="$HOME/.config/lf/configs/icons/copy-move.png"
+    ICON_PATH="$HOME/.config/lf/assets/icons"
 
     if [[ $@ != "" ]]; then
         lf -remote "send $id echo ' 󱥸  calculating files...'"
@@ -74,7 +86,7 @@ cmd paste &{{
 
                             lf -remote "send $id :clear;reload"
                             lf -remote "send $id echo '   $nof file(s) copied successfully'"
-                            notify-send "lf file manager - status" "  $nof file(s) copied successfully" -i "$ICON_PATH"
+                            notify-send "lf file manager - status" "   $nof file(s) copied successfully" -i "$ICON_PATH/copy.png"
                             exit 0
                         else
                             #lf -remote "send $id echo '   aborted'"
@@ -92,7 +104,7 @@ cmd paste &{{
 
                 lf -remote "send $id :clear;reload"	
                 lf -remote "send $id echo '   $nof file(s) copied successfully'"
-                notify-send "lf file manager - status" "  $nof file(s) copied successfully" -i "$ICON_PATH"
+                notify-send "lf file manager - status" "   $nof file(s) copied successfully" -i "$ICON_PATH/copy.png"
                 exit 0	
                 ;;
         move)
@@ -117,7 +129,7 @@ cmd paste &{{
 
             lf -remote "send $id :clear;reload"
             lf -remote "send $id echo '   $nof file(s) moved successfully'"
-            notify-send "lf file manager - status" "  $nof file(s) moved successfully" -i "$ICON_PATH"
+            notify-send "lf file manager - status" "   $nof file(s) moved successfully" -i "$ICON_PATH/move.png"
             exit 0
             ;;
         esac
@@ -373,13 +385,19 @@ cmd chmodx &{{
 # ---------- CREATE BACKUP FILE ----------
 
 cmd "createbackup" &{{
+
+    ICON_PATH="$HOME/.config/lf/assets/icons"
+
+    nof=$(ls $fx | wc -l)
+
     for file in $fx; do
         lf -remote "send $id echo ' 󱥸  creating backup for $(basename $file)'"
         cp $file $file.bak
     done
-
     lf -remote "send $id :reload;unselect"
-    lf -remote "send $id echo '   successfully created backup file(s)'"
+    lf -remote "send $id echo '   $nof backup file(s) created successfully'"
+    notify-send "lf file manager - status" "   $nof backup file(s) created successfully" -i "$ICON_PATH/backup.png"
+    
 }}
 
 
@@ -410,3 +428,9 @@ cmd on-cd &{{
 
 
 
+# ---------- CLEAR CTPV CACHE ON QUIT ----------
+
+cmd on-quit %{{
+    ctpv -e $id
+    rm ~/.cache/ctpv/*
+}}
