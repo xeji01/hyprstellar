@@ -41,15 +41,17 @@ _featuring [COMFY LF](https://github.com/xeji01/hyprstellar/tree/main/.config/lf
 
 ### Input & UI
 
-| Type                   | Name                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| Main Font              | [Nothing Font](https://github.com/xeji01/nothingfont)                                              |
-|                        | [Departure Mono](https://www.nerdfonts.com/font-downloads)                                         |
-| Asian Font Collections | [Adobe Source Han Sans](https://archlinux.org/packages/extra/any/adobe-source-han-sans-otc-fonts/) |
-| Emoji Font             | [Noto Emoji](https://github.com/googlefonts/noto-emoji)                                            |
-| Emoji Selector         | [Rofi Emoji](https://github.com/Mange/rofi-emoji)                                                  | 
-| Clipboard Manager      | [Cliphist](https://github.com/sentriz/cliphist)                                                    |
-| Colorscheme            | [Pywal16](https://github.com/eylles/pywal16)                                                       |
+| Type                          | Name                                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| Main Font                     | [Nothing Font](https://github.com/xeji01/nothingfont)                                              |
+|                               | [Departure Mono](https://www.nerdfonts.com/font-downloads)                                         |
+| Asian Font Collections        | [Adobe Source Han Sans](https://archlinux.org/packages/extra/any/adobe-source-han-sans-otc-fonts/) |
+| Emoji Font                    | [Noto Emoji](https://github.com/googlefonts/noto-emoji)                                            |
+| Emoji Selector                | [Rofi Emoji](https://github.com/Mange/rofi-emoji)                                                  | 
+| Clipboard Manager             | [Cliphist](https://github.com/sentriz/cliphist)                                                    |
+| Colorscheme                   | [Pywal16](https://github.com/eylles/pywal16)                                                       |
+| Neovim Colorscheme            | [Rosé Pine](https://github.com/rose-pine/neovim)                                                   |
+
 
 ### Utilities
 
@@ -145,13 +147,17 @@ Check out my wallpaper [repository](https://github.com/xeji01/wallpapercollectio
 
 ### Neovim
 
-| Dashboard                                            |  
-| ---------------------------------------------------- | 
-| ![image](assets/nvim-alpha.png)                      |
+![image](assets/nvim.png)
 
 ### Spotify
-![image](assets/spotify-artist.png) 
-![image](assets/spotify-home.png) 
+
+| Artist |
+| --- |
+| <img src="assets/spotify-artist.png" alt="artist" width="1366"/>
+
+| Album / Playlist | Lyrics
+| --- | --- 
+| <img src="assets/spotify-album.png" alt="album" width="600"/> | <img src="assets/spotify-lyrics.png" alt="lyrics" width="600"/>
 
 ### Wlogout
 

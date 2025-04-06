@@ -31,16 +31,23 @@ But for the moment, I leave it be for the sake of displaying progress bar.
 Packages:
 
  - [kitty](https://github.com/kovidgoyal/kitty) for native image support.
+ - [ctpv](https://github.com/NikitaIvanovV/ctpv) for image preview.
+ - [ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer) for video thumbnail.
  - [rsync](https://github.com/RsyncProject/rsync) to copy and move files.
  - [wl-clipboard](https://github.com/bugaevc/wl-clipboard) for clipboard backend.
  - [7zip](https://archlinux.org/packages/extra/x86_64/7zip) to handle zip files.
+ - [atool](https://www.nongnu.org/atool/) for archive preview.
+ - [jq](https://github.com/jqlang/jq) for JSON preview.
  - [ffmpeg](https://github.com/FFmpeg/FFmpeg) to convert files.
+ - [exiftool](https://github.com/exiftool/exiftool) for metadata information.
  - [udiskie](https://github.com/coldfix/udiskie) to mount usb devices.
  - [mpv](https://github.com/mpv-player/mpv) to display video.
  - [fzf](https://github.com/junegunn/fzf) to fuzzy find files.
+ - [fd](https://github.com/sharkdp/fd) for better find.
  - [bat](https://github.com/sharkdp/bat) for syntax highlighting.
  - [zoxide](https://github.com/ajeetdsouza/zoxide) to autojump between directories.
 
+Don't forget to copy the ctpv [config](https://github.com/xeji01/hyprstellar/blob/main/.config/ctpv/config) to your `~/.config/ctpv`.
 
 ## Keybindings
 
@@ -48,6 +55,8 @@ Packages:
 | --- | --- |
 | `.` | Show / hide hidden file 
 | `esc` | Clear / cancel 
+| `e` | Open with $EDITOR
+| `o` | Open with mpv
 | `f` | Filter
 | `i` | Invert
 | `rr` | Rename before extension
@@ -73,13 +82,14 @@ Packages:
 | `gt` | cd ~/.trash
 | `cm` | chmodx
 
-Other hotkeys can be found here `~/.config/lf/configs/keymaps`. I'm too lazy to write them all.  
+> [!NOTE]\
+> I suggest you to learn some of lf's [default keymaps](https://github.com/gokcehan/lf/blob/master/doc.md) first. The rest of mine can be found here `~/.config/lf/configs/keymaps`. 
 
 
 
  ## To Do
  - [ ] paste options: ask if files should be overwritten or not.
- - [ ] display video thumbnail.
+ - [x] display video thumbnail. (solved by using ctpv).
  
 
 ## Credit
