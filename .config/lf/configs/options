@@ -17,6 +17,8 @@ setlocal ~/Downloads sortby time
 setlocal ~/Downloads reverse
 setlocal ~/screenshot sortby time
 setlocal ~/screenshot reverse
+setlocal ~/screenrecord sortby time
+setlocal ~/screenrecord reverse
 setlocal ~/.trash sortby ctime
 setlocal ~/.trash reverse
 
