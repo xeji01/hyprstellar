@@ -43,13 +43,13 @@
 }
 
 .control-center .notification-row .notification-background .notification.critical {
-  border: 2px solid #a7091b;
+  border: 2px solid #fa5252;
   border-radius: 4px;
   margin: 0px 0px;
 }
 
 .control-center .notification-row .notification-background .notification.critical .summary {
-  color: #a7091b;
+  color: #fa5252;
 }
 
 .control-center .notification-row .notification-background .notification .notification-content {

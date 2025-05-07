@@ -34,12 +34,12 @@
 }
 
 .floating-notifications.background .notification-row .notification-background .notification.critical {
-  border: 2px solid #a7091b;
+  border: 2px solid #fa5252;
   border-radius: 4px;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification.critical .summary {
-  color: #a7091b;
+  color: #fa5252;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification .notification-content {
