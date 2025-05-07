@@ -59,6 +59,7 @@ map v3 "convert to mp3"
 # SHORTCUTS
 map gc cd ~/.config
 map gd cd ~/Downloads
+map gf cd ~/.local/share/fonts
 map gh cd ~
 map gt cd ~/.trash
 map gw cd ~/wallpaper
