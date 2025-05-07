@@ -2,7 +2,7 @@ preview audio audio/* {{
     audio(){
         ffmpegthumbnailer -i "$f" -o "$cache_f" -s 256 -c "jpg" -q 8 2>/dev/null
     }
-    meta="$(exiftool -S -Title -Artist -Album -Band -Track -Duration -FileSize -AudioBitrate -SampleRate -ChannelMode -FileName "$f" 2>&1)"
+    meta="$(exiftool -S -Title -Artist -Album -Band -Track -Duration -FileSize -AudioBitrate -SampleRate -ChannelMode "$f" 2>&1)"
     printf '%s\n' "$meta"
     y=$((y + $(printf '%s\n\n' "$meta" | wc -l)))
 
@@ -13,8 +13,22 @@ preview video video/* {{
     video() {
         ffmpegthumbnailer -i "$f" -o "$cache_f" -c "jpeg" -s 0 -q 8 -t 50% 2>/dev/null
     }
+    meta="$(exiftool -S -ImageSize -FileType -Duration -AudioChannel -CompressorName "$f" 2>&1)"
+    printf '%s\n' "$meta"
+    y=$((y + $(printf '%s\n\n' "$meta" | wc -l)))
+
 
     convert_and_show_image video
 }}
 
+preview font font/* .otf {{
+    font() {
+	fontpreview -i "$f" -o "$cache_f.png" "$f" 2> /dev/null &&
+		mv -- "$cache_f.png" "$cache_f"
+    }
+    meta="$(exiftool -S -FontName -FileType -FontFamily -FontSubfamily -PostScriptFontName -Designer -DesignerURL -License "$f" 2>&1)"
+    printf '%s\n' "$meta"
+    y=$((y + $(printf '%s\n\n' "$meta" | wc -l)))
 
+convert_and_show_image font
+}}
