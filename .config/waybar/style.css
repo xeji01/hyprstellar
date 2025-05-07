@@ -79,9 +79,46 @@ tooltip label {
 #battery,
 #network,
 #memory,
+#custom-recording,
 #bluetooth,
 #workspaces {
     padding: 0px 14px 0px 14px;
+}
+
+#custom-recording.recording-active {
+    color: #fa5252;
+    background-color: alpha(@background, 0.2);
+    border-radius: 20px;
+    padding: 0 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 3px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+#custom-recording.recording-inactive {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    min-height: 0;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 #window {
@@ -118,5 +155,5 @@ tooltip label {
 }
 
 #calendar {
-    font-family: "DepartureMono Nerd Font";
+    font-family: "Ndot55, DepartureMono Nerd Font";
 }

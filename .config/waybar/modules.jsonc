@@ -57,6 +57,13 @@
 		"on-click": "kitty -e bluetui"
 	},
 
+    "custom/recording": {
+        "exec": "~/.config/hypr/scripts/recording_status.sh",
+        "return-type": "json",
+        "interval": 1,
+        "on-click": "bash ~/.config/hypr/scripts/recorder.sh"
+    },
+
     "group/custom-group": {
         "orientation": "inherit",
         "drawer": {

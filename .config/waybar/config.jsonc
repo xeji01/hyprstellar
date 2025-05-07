@@ -6,8 +6,20 @@
     "reload_style_on_change": true,
 	"height": 34,
 	"width": 500,
-    "include": ["~/.config/waybar/modules.jsonc"],
-	"modules-left": ["clock"],
-	"modules-center": ["hyprland/workspaces"],
-	"modules-right": ["group/custom-group"]
+    "include": [
+        "~/.config/waybar/modules.jsonc"
+    ],
+
+	"modules-left": [
+        "clock",
+        "custom/recording"
+    ],
+
+	"modules-center": [
+        "hyprland/workspaces"
+    ],
+
+	"modules-right": [
+        "group/custom-group"
+    ]
 }
