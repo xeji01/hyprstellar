@@ -25,3 +25,7 @@ vim.keymap.set("n", "<leader>e", ":NvimTreeFindFileToggle<cr>")
 
 -- markdown preview
 vim.keymap.set("n", "<leader>m", ":MarkdownPreviewToggle<cr>")
+
+-- command
+vim.keymap.set("n", "<leader>w", ":w<cr>")
+vim.keymap.set("n", "<leader>q", ":wq<cr>")
