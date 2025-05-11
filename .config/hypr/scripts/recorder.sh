@@ -1,20 +1,56 @@
 #!/bin/env bash
 
+# Path to the icons for notifications
 ICON_PATH="$HOME/.config/hypr/scripts/icons"
 
-pgrep -x "wf-recorder" && pkill -INT -x wf-recorder && notify-send -i $ICON_PATH/recording.png -h string:wf-recorder:record -t 1000 "Finished Recording" && exit 0
+# Directory where screen recordings will be saved
+DIRECTORY="$HOME/screenrecord"
 
-notify-send -i $ICON_PATH/recording.png -h string:wf-recorder:record -t 1000 "Recording in:" "<span color='#90a4f4' font='26px'><i><b>3</b></i></span>"
+# Check if the directory exists
+if [ ! -d "$DIRECTORY" ]; then
+    mkdir -p "$DIRECTORY"
+fi
 
-sleep 1
+# Check if wf-recorder is running
+if pgrep -x "wf-recorder" > /dev/null; then
+    pkill -INT -x wf-recorder
+    notify-send -i "$ICON_PATH/recording-stop.png" -h string:wf-recorder:record -t 2500 "Finished Recording" "Saved at $DIRECTORY"
+    # Update Waybar status
+    swaymsg "exec ~/.config/hypr/scripts/recording_status.sh"
+    exit 0
+fi
 
-notify-send -i $ICON_PATH/recording.png -h string:wf-recorder:record -t 1000 "Recording in:" "<span color='#90a4f4' font='26px'><i><b>2</b></i></span>"
+# Get the list of available monitor names using grep and awk
+MONITORS=$(hyprctl monitors | grep "^Monitor " | awk '{print $2}')
 
-sleep 1
+# Debug: Print the value of MONITORS
+echo "DEBUG: Monitors list:"
+echo "$MONITORS"
 
-notify-send -i $ICON_PATH/recording.png -h string:wf-recorder:record -t 950 "Recording in:" "<span color='#90a4f4' font='26px'><i><b>1</b></i></span>"
+# Present the monitor list in rofi
+SELECTED_MONITOR=$(echo "$MONITORS" | rofi -dmenu -p "Record Monitor:")
 
-sleep 1
+# Debug: Print the selected monitor
+echo "DEBUG: Selected monitor: $SELECTED_MONITOR"
 
-dateTime=$(date +%m-%d-%Y-%H:%M:%S)
-wf-recorder --bframes max_b_frames -f $HOME/screenshot/$dateTime.mp4
+# Check if a monitor was selected
+if [ -n "$SELECTED_MONITOR" ]; then
+    # Use the selected monitor name directly
+    MONITOR_NAME="$SELECTED_MONITOR"
+
+    # Get the current date and time for the filename
+    dateTime=$(date +%a-%b-%d-%y-%H:%M:%S)
+
+    # Notify the user that recording will start on the selected monitor
+    notify-send -i "$ICON_PATH/recording.png" -h string:wf-recorder:record -t 1500 "Recording Monitor" "Starting recording on: $MONITOR_NAME"
+
+    # Start the screen recording on the selected output
+    wf-recorder -o "$MONITOR_NAME" --bframes max_b_frames -f "$DIRECTORY/$dateTime.mp4" &
+
+elif [ -z "$SELECTED_MONITOR" ]; then
+    # User cancelled the rofi menu
+    exit 0
+else
+    notify-send -i "$ICON_PATH/recording.png" "Error" "No monitor selected."
+    exit 1
+fi
