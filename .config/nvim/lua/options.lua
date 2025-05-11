@@ -16,3 +16,5 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true   -- convert tabs to spaces
 vim.opt.smartindent = true -- smart auto indenting
 vim.opt.autoindent = true  -- auto indentation
+
+require("notify").setup({ background_colour = "#FFFFFF" })
